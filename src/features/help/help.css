@@ -1,0 +1,47 @@
+/* ---------- 操作说明 ---------- */
+.hg-body { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 20px; align-items: start; }
+.hg-nav { position: sticky; top: 12px; display: grid; gap: 2px; }
+.hg-nav a { display: block; padding: 6px 10px; border-radius: var(--r); color: var(--fg-2); text-decoration: none; font-size: 13px; }
+.hg-nav a:hover { color: var(--fg); background: var(--hover); }
+.hg-nav a.on { background: var(--press); color: var(--fg); font-weight: 500; }
+.hg-main { min-width: 0; max-width: 920px; }
+.hg-main h2 { margin: 2px 0 4px; font-size: 18px; font-weight: 600; }
+.hg-main h3 { margin: 22px 0 10px; font-size: 14.5px; font-weight: 600; }
+.hg-sub { margin: 0 0 14px; font-size: 13px; line-height: 1.6; color: var(--fg-2); }
+.hg-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 14px; }
+.hg-flow > span { display: inline-flex; align-items: center; gap: 6px; }
+.hg-flow b { padding: 3px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-text); font-size: 12.5px; font-weight: 500; }
+.hg-flow .i { width: 14px; height: 14px; color: var(--fg-4); }
+.hg-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.hg-step { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 12px; padding: 14px 16px; }
+.hg-ic { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; background: var(--accent-soft); color: var(--accent-text); }
+.hg-ic .i { width: 16px; height: 16px; }
+.hg-sh { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; font-size: 14px; }
+.hg-sh .bd { height: auto; min-height: 22px; white-space: normal; font-weight: 400; color: var(--fg-3); }
+.hg-open { margin-left: auto; font-size: 13px; }
+.hg-step ul { margin: 8px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.7; color: var(--fg-2); }
+.hg-tbl { margin-top: 14px; }
+.hg-tbl td { white-space: normal; line-height: 1.6; vertical-align: top; }
+.hg-tbl td:first-child { white-space: nowrap; }
+@media (max-width: 900px) {
+  .hg-body { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .hg-nav { position: static; display: flex; gap: 4px; overflow-x: auto; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+  .hg-nav a { flex: none; white-space: nowrap; }
+}
+@media (max-width: 640px) {
+  .hg-step { grid-template-columns: minmax(0, 1fr); padding: 12px 14px; }
+  .hg-ic { display: none; }
+  .hg-tbl td:first-child { white-space: normal; min-width: 72px; }
+}
+
+/* ---------- 版本说明 ---------- */
+.hr-rel { padding: 14px 18px 16px; font-size: 13px; line-height: 1.7; }
+.hr-h { display: flex; align-items: baseline; gap: 10px; font-size: 15px; }
+.hr-rel p { margin: 6px 0 0; }
+.hr-rel h4 { margin: 14px 0 2px; font-size: 13px; font-weight: 600; }
+.hr-rel ul { margin: 0; padding-left: 18px; color: var(--fg-2); }
+
+/* 数据库查询结果：每个单元格固定宽度、一行省略，点开看完整内容 */
+.db-cell { display: block; width: 180px; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: zoom-in; }
+.db-cell:hover { color: var(--accent-text); }
+.db-full { margin: 0; padding: 12px; max-height: 60vh; overflow: auto; background: var(--bg-2, rgba(127, 127, 127, .08)); border-radius: 8px; font: 12.5px/1.6 var(--mono); white-space: pre-wrap; word-break: break-all; }

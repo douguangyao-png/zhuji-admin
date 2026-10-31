@@ -1,0 +1,118 @@
+/* sign-in page styles, copied from docs/design-source/redesign-v2/login.html; the root is `.lg-page` because this file is global here and `.lg` is also the large size of dialogs and avatars */
+.lg-page { --glass: color-mix(in srgb, var(--card) 90%, transparent); --hl: rgba(255, 255, 255, .05);
+  min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 64px 16px 40px; background: var(--bg); position: relative; isolation: isolate; overflow: hidden; }
+[data-theme="light"] .lg-page { --glass: color-mix(in srgb, var(--card) 86%, transparent); --hl: rgba(255, 255, 255, .9); }
+.lg-bg { position: fixed; inset: 0; z-index: -1; width: 100%; height: 100%; }
+.lg-dots { fill: var(--line-3); }
+.lg-ecg { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-linejoin: round; opacity: .28; }
+.lg-page .btn.lg-theme { width: 30px; height: 30px; }
+.lg-theme { position: fixed; top: 16px; right: 16px; z-index: 5; background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-color: var(--line-3); }
+
+.lg-page > section { width: 100%; max-width: 620px; }
+.lg-card { border: 1px solid var(--line-2); border-radius: 16px; background: var(--glass); overflow: hidden;
+  backdrop-filter: blur(18px) saturate(1.2); -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  box-shadow: inset 0 1px 0 var(--hl), 0 1px 2px rgba(0, 0, 0, .2), 0 40px 80px -32px rgba(0, 0, 0, .75);
+  animation: lg-in .5s cubic-bezier(.2, .7, .2, 1) both; }
+[data-theme="light"] .lg-card { box-shadow: inset 0 1px 0 var(--hl), 0 1px 2px rgba(16, 18, 22, .05), 0 32px 64px -30px rgba(16, 18, 22, .28); }
+[data-theme="dark"] .lg-card { border-color: var(--line-3); box-shadow: inset 0 1px 0 var(--hl), 0 0 0 1px rgba(145, 132, 217, .06), 0 40px 90px -30px rgba(0, 0, 0, .8), 0 0 60px -30px rgba(145, 132, 217, .5); }
+@keyframes lg-in { from { opacity: 0; transform: translateY(8px) scale(.99); } }
+.lg-in { padding: 32px 48px 28px; }
+
+.lg-brand { display: flex; align-items: center; justify-content: center; gap: 9px; font-weight: 600; font-size: 14px; }
+.lg-brand .logo { width: 28px; height: 28px; border-radius: 7px; }
+.lg-brand .logo svg { width: 15px; height: 15px; }
+.lg-brand small { color: var(--fg-3); font: inherit; font-weight: 400; }
+[data-theme="dark"] .lg-brand { font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; }
+[data-theme="dark"] .lg-brand small { color: inherit; font-weight: 500; }
+.lg-page h1 { margin-top: 18px; font-size: 22px; font-weight: 600; letter-spacing: -.025em; line-height: 1.2; text-align: center; }
+[data-theme="dark"] .lg-page h1 { font-weight: 500; color: #f3f5fe; }
+.lg-page .sub { margin-top: 6px; color: var(--fg-3); font-size: 13.5px; line-height: 1.55; text-align: center; }
+.lg-page .sub b { color: var(--fg); font-weight: 500; }
+
+.demo-l { display: flex; align-items: baseline; margin-top: 22px; font-size: 12px; font-weight: 500; color: var(--fg-2); }
+.demo-l span { margin-left: auto; font-weight: 400; color: var(--fg-3); }
+.demo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+.demo button { display: grid; justify-items: center; align-content: start; gap: 7px; padding: 12px 6px 10px; border: 1px solid var(--line-2); border-radius: var(--r-lg);
+  background: color-mix(in srgb, var(--card-2) 70%, transparent); color: var(--fg-2); font: 500 12px/1.3 var(--font); text-align: center; cursor: pointer;
+  transition: border-color .12s, background .12s, color .12s, transform .12s; }
+.demo button:hover { border-color: var(--line-3); background: var(--hover); color: var(--fg); transform: translateY(-1px); }
+.demo button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; color: var(--fg); border-color: var(--accent-line); }
+.demo .av { width: 38px; height: 38px; font-size: 13px; transition: box-shadow .12s; }
+.demo button:hover .av, .demo button:focus-visible .av { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--accent); }
+.demo-c { min-height: 18px; margin-top: 8px; font-size: 12px; color: var(--fg-3); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.demo-c b { color: var(--fg); font-weight: 500; }
+
+.lg-page .or { margin: 20px 0; }
+.sso { display: grid; gap: 8px; margin-top: 20px; }
+.lg-page .btn { width: 100%; height: 40px; font-size: 13.5px; }
+.lg-page .btn-p { margin-top: 20px; }
+[data-theme="dark"] .lg-page .btn-p { color: var(--accent-text); }
+.lg-page .field { margin-top: 14px; }
+.lg-page .field:first-of-type { margin-top: 0; }
+.lg-page .input { height: 40px; font-size: 14px; background: color-mix(in srgb, var(--card) 80%, var(--bg)); }
+.lg-page .field > label .link { margin-left: auto; font-size: 12.5px; font-weight: 500; color: var(--accent-text); }
+.lg-page .field > label .link:hover { text-decoration: underline; }
+.f-err { display: flex; gap: 6px; align-items: center; font-size: 12.5px; color: var(--crit-text); }
+.f-err[hidden] { display: none; }
+.lg-page .input[aria-invalid="true"] { border-color: var(--crit); }
+.lg-page .input[aria-invalid="true"]:focus { box-shadow: 0 0 0 3px color-mix(in srgb, var(--crit) 30%, transparent); }
+.spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+:where(.lg-page) .btn[aria-busy="true"] { pointer-events: none; opacity: .85; }
+.pw button[aria-pressed="true"] { color: var(--fg); }
+
+.lg-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding: 13px 48px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--card-2) 60%, transparent); font-size: 12px; color: var(--fg-3); }
+.lg-foot a { color: var(--fg-2); }
+.lg-foot a:hover { color: var(--fg); text-decoration: underline; }
+.lg-foot a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.lg-foot .st { margin-left: auto; font-size: 12px; }
+.lg-copy { margin-top: 14px; text-align: center; font-size: 11.5px; color: var(--fg-3); }
+
+.lg-page .ws-pick { background: color-mix(in srgb, var(--card-2) 70%, transparent); }
+.lg-page .otp .input { height: 50px; }
+
+/* 登录滑块验证码：图按 300×150 原图等比缩放，拼图块和滑块都用百分比定位 */
+.scap { width: 100%; max-width: 280px; margin: 12px auto 0; user-select: none; -webkit-user-select: none; }
+.scap-img { position: relative; aspect-ratio: 2 / 1; border: 1px solid var(--line-2); border-radius: var(--r-lg); overflow: hidden; background: var(--card-2); }
+.scap-img > img:first-child { display: block; width: 100%; height: 100%; }
+.scap-ph { display: grid; place-items: center; height: 100%; padding: 0 16px; font-size: 12.5px; color: var(--fg-3); text-align: center; }
+.scap-piece { position: absolute; pointer-events: none; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .4)); }
+.scap-refresh { position: absolute; top: 6px; right: 6px; display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 6px;
+  background: rgba(16, 18, 22, .45); color: #fff; cursor: pointer; }
+.scap-refresh:hover { background: rgba(16, 18, 22, .65); }
+.scap-refresh:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.scap-refresh svg { width: 15px; height: 15px; }
+.scap-bar { position: relative; height: 36px; margin-top: 6px; border: 1px solid var(--line-2); border-radius: var(--r-lg);
+  background: color-mix(in srgb, var(--card) 80%, var(--bg)); touch-action: none; }
+.scap-fill { position: absolute; inset: 0 auto 0 0; max-width: 100%; border-radius: var(--r-lg) 0 0 var(--r-lg); background: var(--accent-soft); }
+.scap-text { position: absolute; inset: 0 8px 0 52px; display: flex; align-items: center; justify-content: center; font-size: 12.5px; color: var(--fg-3);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+.scap-knob { position: absolute; top: -1px; bottom: -1px; display: grid; place-items: center; width: 44px; border: 1px solid var(--line-3); border-radius: var(--r-lg);
+  background: var(--card); color: var(--fg-2); box-shadow: 0 1px 2px rgba(0, 0, 0, .12); cursor: grab; touch-action: none; }
+.scap-knob svg { width: 16px; height: 16px; }
+.scap-knob:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.scap[data-state="drag"] .scap-knob { cursor: grabbing; border-color: var(--accent-line); color: var(--accent-text); }
+.scap[data-state="check"] .scap-knob { cursor: progress; }
+.scap[data-state="pass"] .scap-fill { background: var(--good-soft); }
+.scap[data-state="pass"] .scap-knob { border-color: var(--good); background: var(--good); color: #fff; cursor: default; }
+.scap[data-state="pass"] .scap-text { color: var(--good-text); }
+.scap[data-state="fail"] .scap-fill { background: var(--crit-soft); }
+.scap[data-state="fail"] .scap-text { color: var(--crit-text); }
+.scap[data-state="fail"] .scap-img, .scap[data-state="fail"] .scap-knob { animation: cap-shake .4s; }
+@keyframes cap-shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+@media (prefers-reduced-motion: reduce) { .scap[data-state="fail"] .scap-img, .scap[data-state="fail"] .scap-knob { animation: none; } }
+.lg-page .btn-p:disabled { opacity: .55; cursor: not-allowed; }
+
+/* 改密码：规则清单、按钮一行 */
+.pw-rules { margin: 0; padding-left: 18px; font-size: 12.5px; line-height: 1.7; color: var(--fg-3); }
+.pw-actions { display: flex; gap: 8px; }
+.lg-page .pw-actions .btn { margin-top: 0; }
+
+@media (max-width: 480px) {
+  .lg-page { place-items: start center; padding: 64px 16px 24px; }
+  .lg-bg { opacity: .55; }
+  .lg-in { padding: 24px 20px 22px; }
+  .lg-foot { padding: 12px 20px; }
+  .demo button { padding: 10px 4px 9px; font-size: 11.5px; }
+}
+

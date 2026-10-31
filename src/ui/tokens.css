@@ -1,0 +1,158 @@
+/* 设计变量与主题 */
+/* 两套主题：白天 light（默认）、黑夜 dark */
+
+/* 白天（默认） */
+:root, [data-theme="light"] {
+  color-scheme: light;
+  --font: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --bg: #f6f6f7;
+  --rail: #ffffff;
+  --side: #fbfbfb;
+  --card: #ffffff;
+  --card-2: #fafafa;
+  --hover: #f1f2f3;
+  --press: #e9eaec;
+  --line: #e5e6e9;
+  --line-2: #d8dade;
+  --line-3: #c3c6cc;
+  --fg: #0b0c0e;
+  --fg-2: #43474e;
+  --fg-3: #62666e;
+  --fg-4: #9a9ea5;
+  --primary: #0b0c0e;
+  --primary-fg: #ffffff;
+  --accent: #2a78d6;
+  --accent-text: #1c5cab;
+  --accent-soft: rgba(42, 120, 214, .09);
+  --accent-line: rgba(42, 120, 214, .4);
+  --s1: #2a78d6;
+  --s2: #eb6834;
+  --s3: #1baf7a;
+  --s4: #eda100;
+  --good: #0ca30c;
+  --warn: #fab219;
+  --serious: #ec835a;
+  --crit: #d03b3b;
+  --good-text: #006300;
+  --warn-text: #8a5a00;
+  --serious-text: #b24a1f;
+  --crit-text: #b3261e;
+  --good-soft: rgba(12, 163, 12, .09);
+  --warn-soft: rgba(250, 178, 25, .14);
+  --serious-soft: rgba(236, 131, 90, .12);
+  --crit-soft: rgba(208, 59, 59, .09);
+  /* 实底红标签（停用、已过期）：白字对比度不低于 4.5 */
+  --crit-solid: #c93636;
+  --crit-solid-fg: #ffffff;
+  --grid: #eeeff1;
+  --axis: #d3d5d9;
+  --shadow-pop: 0 18px 48px -14px rgba(16, 18, 22, .22), 0 0 0 1px var(--line);
+  --ring: 0 0 0 3px rgba(42, 120, 214, .22);
+  --knob: #ffffff;
+  --knob-on: #ffffff;
+  --scrim: rgba(16, 18, 22, .32);
+  --r-sm: 5px;
+  --r: 7px;
+  --r-lg: 10px;
+  --r-xl: 12px;
+  --nav-w: 248px;
+  --nav-w-c: 64px;
+  --nav-cur: var(--nav-w);
+  --top-h: 52px;
+}
+
+/* 黑夜：蓝灰底，强调色用作线条和光晕 */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --font: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --bg: #161826;
+  --rail: #161826;
+  --side: #161826;
+  --card: #232532;
+  --card-2: #1d1f2c;
+  --hover: #2a2c3a;
+  --press: #30323f;
+  --line: #33353f;
+  --line-2: #3f424d;
+  --line-3: #595d6c;
+  --fg: #e9e9ed;
+  --fg-2: #b2b6ca;
+  --fg-3: #9397ab;
+  --fg-4: #75798c;
+  --primary: #9184d9;
+  --primary-fg: #161826;
+  --accent: #9184d9;
+  --accent-text: #b5abfc;
+  --accent-soft: rgba(145, 132, 217, .16);
+  --accent-line: rgba(145, 132, 217, .55);
+  --glow: 0 0 0 1px rgba(145, 132, 217, .12), 0 0 16px -4px rgba(145, 132, 217, .6);
+  --s1: #968ae0;
+  --s2: #cfd3e5;
+  --s3: #8a8ea3;
+  --s4: #6a6e80;
+  --bar-hi: #968ae0;
+  --bar-lo: #423a6a;
+  --good: #4bb38a;
+  --warn: #e0a63a;
+  --serious: #e08a64;
+  --crit: #e0605f;
+  --good-text: #6fcf9f;
+  --warn-text: #f0c56e;
+  --serious-text: #f2a582;
+  --crit-text: #f28b8a;
+  --good-soft: rgba(75, 179, 138, .14);
+  --warn-soft: rgba(224, 166, 58, .14);
+  --serious-soft: rgba(224, 138, 100, .14);
+  --crit-soft: rgba(224, 96, 95, .16);
+  /* 实底红标签（停用、已过期）：白字对比度不低于 4.5 */
+  --crit-solid: #c94544;
+  --crit-solid-fg: #ffffff;
+  --grid: #2c2e3b;
+  --axis: #3f424d;
+  --shadow-pop: 0 16px 40px rgba(0, 0, 0, .65), 0 0 0 1px var(--line-3);
+  --ring: 0 0 0 3px rgba(145, 132, 217, .42);
+  --knob: #9397ab;
+  --knob-on: #f5f4ff;
+  --scrim: rgba(10, 11, 20, .66);
+  --btn-bg: transparent;
+  --btn-line: rgba(233, 233, 237, .16);
+  --r-sm: 4px;
+  --r: 8px;
+  --r-lg: 8px;
+  --r-xl: 14px;
+  --mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --nav-w: 248px;
+  --nav-w-c: 64px;
+  --nav-cur: var(--nav-w);
+  --top-h: 52px;
+}
+
+
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+/* page-to-page navigation cross-fades; the sidebar stays put */
+@view-transition { navigation: auto; }
+::view-transition-group(root) { animation-duration: .14s; }
+.side { view-transition-name: k-rail; }
+::view-transition-group(k-rail), ::view-transition-new(k-rail) { animation: none; }
+::view-transition-old(k-rail) { display: none; }
+body {
+  font: 400 13.5px/1.5 var(--font);
+  color: var(--fg);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; }
+::selection { background: var(--accent-soft); }
+.mono { font-family: var(--mono); font-size: .93em; letter-spacing: -.01em; }
+.tnum { font-variant-numeric: tabular-nums; }
+.fg2 { color: var(--fg-2); } .fg3 { color: var(--fg-3); } .fg4 { color: var(--fg-4); }
+.push { margin-left: auto; }
+.nowrap { white-space: nowrap; }
+.i { width: 16px; height: 16px; flex: none; display: block; }
+[hidden] { display: none !important; }
+

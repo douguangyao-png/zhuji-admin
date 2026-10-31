@@ -1,0 +1,113 @@
+import { del, get, post, put } from './http';
+import { receiveSealed, sealed } from './sm2';
+import type { MsgGroup, MsgPolicy, MsgRule, MsgSendLog, UrgeState, WfPolicy } from './types';
+import type { AuditLog, LoginLog, DeletedRow, HomeLayout, DeviceEndpoint, DeviceLog, DictItem, Me, MenuNode, Message, OrgUnit, Page, Role, Settings, SettingsInput, SsoKind, SsoProvider, Todo, User, UserAttrDef, UserSyncConfig, UserSyncLine, UserSyncLog, WfDef, WfInstance } from './types';
+
+export type UserRow = User & { unitName: string; roleNames: string[]; /** 登录时返回的会话号 */ sid?: string };
+
+export const coreApi = {
+  login: (username: string, password: string, captchaToken?: string) => sealed({ password }, (s) => post<UserRow>('/auth/login', { username, captchaToken, ...s })),
+  sso: (role: string) => post<UserRow>('/auth/sso', { role }),
+  logout: () => post<{ logoutUrl: string | null }>('/auth/logout'),
+  demoUsers: () => get<UserRow[]>('/auth/demo-users'),
+  ssoProviders: () => get<{ id: SsoKind; name: string }[]>('/auth/sso/providers'),
+  ssoLogin: (provider: SsoKind, credential: { token?: string; ticket?: string; code?: string }) => post<UserRow>('/auth/sso/login', { provider, ...credential }),
+  ssoConfig: () => get<SsoProvider[]>('/sys/sso'),
+  saveSso: (p: SsoProvider) => put<SsoProvider>(`/sys/sso/${p.id}`, p),
+  devices: () => get<DeviceEndpoint[]>('/sys/devices'),
+  saveDevice: (d: DeviceEndpoint) => put<DeviceEndpoint>(`/sys/devices/${d.id}`, d),
+  deviceLogs: (endpointId?: string) => get<DeviceLog[]>('/sys/device-logs', { endpointId }),
+  msgGroups: () => get<MsgGroup[]>('/notify/groups'),
+  saveMsgGroup: (g: Partial<MsgGroup>) => (g.id ? put<MsgGroup>(`/notify/groups/${g.id}`, g) : post<MsgGroup>('/notify/groups', g)),
+  deleteMsgGroup: (id: string) => del<boolean>(`/notify/groups/${id}`),
+  testMsgGroup: (id: string) => post<{ ok: boolean; detail: string }>(`/notify/groups/${id}/test`),
+  msgRules: () => get<MsgRule[]>('/notify/rules'),
+  saveMsgRule: (r: MsgRule) => put<MsgRule>(`/notify/rules/${r.id}`, r),
+  msgLog: (q: Record<string, unknown>) => get<MsgSendLog[]>('/notify/log', q),
+  runJobs: () => post<{ sent: number }>('/notify/run-jobs'),
+  previewRule: (event: string) => get<string>(`/notify/preview/${event}`),
+  testIntegration: (kind: 'sso' | 'device', id: string) => post<{ ok: boolean; detail: string }>(`/sys/test/${kind}/${id}`),
+  userSync: () => get<UserSyncConfig>('/sys/user-sync'),
+  saveUserSync: (c: Partial<UserSyncConfig>) => put<UserSyncConfig>('/sys/user-sync', c),
+  newUserSyncSecret: () => post<{ appKey: string; secret: string }>('/sys/user-sync/secret'),
+  runUserSync: () => post<UserSyncLog>('/sys/user-sync/run'),
+  userSyncLogs: () => get<UserSyncLog[]>('/sys/user-sync/logs'),
+  userSyncLog: (id: string) => get<UserSyncLog & { lines: UserSyncLine[] }>(`/sys/user-sync/logs/${id}`),
+  me: () => get<Me & { user: UserRow }>('/me'),
+  changePassword: (oldPassword: string, newPassword: string) => sealed({ oldPassword, newPassword }, (s) => post<boolean>('/me/password', s)),
+  resetPassword: async (userId: string) => ({ password: await receiveSealed((publicKey) => post(`/org/users/${userId}/reset-password`, { publicKey })) }),
+  settings: () => get<Settings>('/settings'),
+  defaultPassword: () => get<{ defaultPassword: string }>('/settings/default-password'),
+  saveSettings: (s: SettingsInput) => put<Settings>('/settings', s),
+  saveMenuNames: (names: Record<string, string>) => put<Settings>('/settings/menu-names', names),
+  saveMenuConfig: (config: Record<string, MenuNode>) => put<Settings>('/settings/menu-config', config),
+  reset: () => post<boolean>('/demo/reset'),
+
+  units: () => get<OrgUnit[]>('/org/units'),
+  saveUnit: (u: Partial<OrgUnit>) => (u.id ? put<OrgUnit>(`/org/units/${u.id}`, u) : post<OrgUnit>('/org/units', u)),
+  deleteUnit: (id: string) => del<boolean>(`/org/units/${id}`),
+  users: (q: Record<string, unknown>) => get<Page<UserRow>>('/org/users', q),
+  /** 扩展属性已填过的值，人员页的筛选下拉用 */
+  userAttrs: () => get<Record<string, string[]>>('/org/users/attrs'),
+  userOptions: (q: string, size?: number) => get<{ id: string; name: string; no: string; unitName: string }[]>('/org/users/options', { q, size }),
+  importUsers: (rows: Record<string, unknown>[]) => post<{ added: number; updated: number; skipped: number; errors?: { row: number; message: string }[] }>('/org/users/import', { rows }),
+  saveUser: (u: Partial<User>) => (u.id ? put<UserRow>(`/org/users/${u.id}`, u) : post<UserRow>('/org/users', u)),
+  /** 人员属性目录 */
+  userAttrDefs: () => get<UserAttrDef[]>('/user-attrs'),
+  baseUserAttrs: () => get<UserAttrDef[]>('/user-attrs/builtin'),
+  deleteUserAttrDef: (key: string) => del<boolean>(`/user-attrs/${key}`),
+  saveUserAttrDef: (d: Partial<UserAttrDef>) => (d.key ? put<UserAttrDef>(`/user-attrs/${d.key}`, d) : post<UserAttrDef>('/user-attrs', d)),
+  toggleUser: (id: string) => post<UserRow>(`/org/users/${id}/toggle`),
+  setSyncLock: (ids: string[], locked: boolean) => post<number>('/org/users/sync-lock', { ids, locked }),
+
+  roles: () => get<(Role & { users: number })[]>('/roles'),
+  saveRole: (r: Partial<Role>) => (r.key ? put<Role>(`/roles/${r.key}`, r) : post<Role>('/roles', r)),
+  /** 删除自定义角色：removed 移除该角色的人数，toUser 改为普通用户的人数 */
+  deleteRole: (key: string) => del<{ removed: number; toUser: number }>(`/roles/${key}`),
+  roleUsages: (key: string) => get<string[]>(`/roles/${key}/usages`),
+
+  dictTypes: () => get<{ key: string; name: string; parentId?: string | null }[]>('/dict-types'),
+  addDictType: (name: string, parentId?: string) => post<{ key: string; name: string; parentId?: string | null }>('/dict-types', { name, parentId }),
+  renameDictType: (key: string, name: string) => put<{ key: string; name: string }>('/dict-types/' + key, { name }),
+  deleteDictType: (key: string) => del<boolean>('/dict-types/' + key),
+  dicts: (type?: string, all?: boolean) => get<DictItem[]>('/dicts', { type, all: all ? 1 : undefined }),
+  addDict: (type: string, name: string) => post<DictItem>('/dicts', { type, name }),
+  saveDict: (d: Partial<DictItem> & { id: string }) => put<DictItem>(`/dicts/${d.id}`, d),
+  dictUsage: (id: string) => get<{ usage: number }>(`/dicts/${id}/usage`),
+  deleteDict: (id: string) => del<{ usage: number }>(`/dicts/${id}`),
+  removedDicts: (type?: string) => get<DictItem[]>('/dicts/removed', { type }),
+  restoreDict: (id: string) => post<DictItem>(`/dicts/${id}/restore`),
+
+  /** unread 未读条数；urgent 未读且待处理的紧急条数 */
+  messages: (q: Record<string, unknown>) => get<Page<Message> & { unread: number; urgent: number }>('/messages', q),
+  readMessage: (id: string) => post(`/messages/${id}/read`),
+  readAll: () => post('/messages/read-all'),
+  msgPolicy: () => get<MsgPolicy>('/msg-policy'),
+  saveMsgPolicy: (p: Partial<MsgPolicy>) => put<MsgPolicy>('/msg-policy', p),
+  /** 立即跑一次升级和推送 */
+  runMsgPolicy: () => post<{ escalated: number; pushed: number }>('/msg-policy/run'),
+  audit: (q: Record<string, unknown>) => get<Page<AuditLog>>('/audit', q),
+  loginLogs: (q: Record<string, unknown>) => get<Page<LoginLog>>('/audit/logins', q),
+
+  approvals: (q: Record<string, unknown>) => get<Page<WfInstance>>('/approvals', q),
+  approval: (id: string) => get<WfInstance>(`/approvals/${id}`),
+  approvalsOf: (type: string, bizId: string) => get<WfInstance[]>('/approvals/of-biz', { type, bizId }),
+  approve: (id: string, comment?: string) => post<WfInstance>(`/approvals/${id}/approve`, { comment }),
+  reject: (id: string, comment: string) => post<WfInstance>(`/approvals/${id}/reject`, { comment }),
+  urgeState: (id: string) => get<UrgeState>(`/approvals/${id}/urge`),
+  urge: (id: string) => post<UrgeState>(`/approvals/${id}/urge`),
+  wfPolicy: () => get<WfPolicy>('/wf-policy'),
+  saveWfPolicy: (p: Partial<WfPolicy>) => put<WfPolicy>('/wf-policy', p),
+  batchApprove: (ids: string[]) => post<WfInstance[]>('/approvals/batch', { ids, action: 'approve' }),
+  wfDefs: () => get<(WfDef & { id: string })[]>('/wf-defs'),
+  saveWfDef: (d: WfDef) => put<WfDef>(`/wf-defs/${d.type}`, d),
+
+  deleted: (q: Record<string, unknown> = {}) => get<Page<DeletedRow>>('/audit/deleted', q),
+  restoreDeleted: (id: string, batch = false) => post<{ restored: number }>(`/audit/deleted/${id}/restore`, { batch }),
+  /** 物理删除要再输入自己的密码，和登录一样先加密再传 */
+  purgeDeleted: (id: string, password: string) => sealed({ password }, (s) => post<boolean>(`/audit/deleted/${id}/purge`, s)),
+  todos: () => get<Todo[]>('/home/todos'),
+  homeLayout: () => get<HomeLayout | null>('/home/layout'),
+  saveHomeLayout: (l: HomeLayout) => put<HomeLayout>('/home/layout', l),
+  resetHomeLayout: () => del<void>('/home/layout'),
+};

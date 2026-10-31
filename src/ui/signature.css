@@ -1,0 +1,10 @@
+/* 签名板底色固定白、笔迹深蓝，导出的 PNG 在两种主题和打印件上都清楚 */
+.sig-pad { display: grid; gap: 6px; }
+.sig-pad-h { display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 500; color: var(--fg-2); }
+.sig-pad-h > span:first-child { flex: 1; min-width: 0; }
+.sig-pad-s { font-weight: 400; color: var(--fg-4); }
+.sig-pad-s.ok { color: var(--good-text); }
+.sig-pad-s.bad { color: var(--crit-text); }
+.sig-pad-c { display: block; width: 100%; border: 1px dashed var(--line-3); border-radius: var(--r); background: #fff; touch-action: none; cursor: crosshair; }
+.sig-pad-fb { color: #333; font: inherit; }
+.sig-img { display: inline-block; height: 28px; max-width: 120px; background: #fff; border: 1px solid var(--line); border-radius: 3px; vertical-align: middle; object-fit: contain; }

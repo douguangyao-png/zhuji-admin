@@ -1,0 +1,27 @@
+/* 单据打印：A4 纵向，打印时只留单据本身 */
+.dp-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; font-size: 13px; }
+.dp-bar label { display: inline-flex; align-items: center; gap: 6px; }
+.dp-sheet { page: doc-a4; max-width: 760px; padding: 28px 32px; border: 1px solid var(--line); background: #fff; color: #000; overflow-x: auto; }
+.dp-head { display: grid; grid-template-columns: 1fr auto; align-items: start; gap: 12px; }
+.dp-head h2 { margin: 0; font-size: 18px; text-align: center; }
+.dp-no { margin: 6px 0 16px; text-align: center; color: #444; font-size: 12px; }
+.dp-qr { display: grid; justify-items: center; gap: 2px; font-size: 10px; color: #444; }
+.dp-sheet h3 { margin: 18px 0 6px; font-size: 13px; }
+.dp-sheet table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.dp-sheet th, .dp-sheet td { padding: 7px 10px; border: 1px solid #333; text-align: left; vertical-align: top; }
+.dp-sheet th { font-weight: 500; background: #f3f3f3; white-space: nowrap; }
+.dp-kv th { width: 90px; }
+.dp-sheet .num { text-align: right; }
+.dp-sign { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 28px; font-size: 13px; }
+.dp-sign div { display: grid; gap: 4px; }
+.dp-sign i { display: block; height: 40px; border-bottom: 1px solid #333; }
+.dp-foot { margin-top: 14px; color: #555; font-size: 11px; }
+@media (max-width: 720px) { .dp-sheet { padding: 18px 14px; } .dp-sign { grid-template-columns: 1fr 1fr; } }
+@page doc-a4 { size: A4 portrait; margin: 14mm 12mm; }
+@media print {
+  body:has(.dp-print) :is(.side, .top, .dp-bar, .toaster, .fb-fab) { display: none !important; }
+  body:has(.dp-print) .app { display: block; }
+  body:has(.dp-print) .page { padding: 0; }
+  .dp-sheet { border: 0; padding: 0; max-width: none; overflow: visible; }
+  .dp-sheet table, .dp-sign { break-inside: avoid; }
+}
