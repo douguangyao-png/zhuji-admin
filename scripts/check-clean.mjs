@@ -48,6 +48,13 @@ function checkDefaultName(root = ROOT) {
 }
 
 /** 成对的中英文文档：二级标题（## 开头的行）数量要一致 */
+/** ui/ 的来源记录必须在，并且写了同步日期 */
+function checkSource() {
+  const f = 'src/ui/SOURCE.md';
+  if (!fs.existsSync(f)) return [`${f} 缺失：ui/ 要有来源记录`];
+  return fs.readFileSync(f, 'utf8').includes('同步日期') ? [] : [`${f} 里没有「同步日期」`];
+}
+
 const PAIRS = [['README.md', 'README.zh-CN.md'], ['docs/Security.md', 'docs/安全说明.md']];
 function checkPairs(root = ROOT) {
   const h2 = (f) => fs.readFileSync(path.join(root, f), 'utf8').split(String.fromCharCode(10)).filter((l) => l.startsWith('## ')).length;
@@ -67,7 +74,7 @@ function selftest() {
 
 if (process.argv.includes('--selftest')) selftest();
 else {
-  const hits = [...scan(), ...checkDefaultName(), ...checkPairs()];
+  const hits = [...scan(), ...checkDefaultName(), ...checkPairs(), ...checkSource()];
   if (hits.length) { console.error(`清洁检查未通过，命中 ${hits.length} 处：\n${hits.join('\n')}`); process.exit(1); }
   console.log('清洁检查通过，命中 0 处');
 }

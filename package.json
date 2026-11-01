@@ -11,7 +11,8 @@
     "test": "vitest run",
     "new:module": "node scripts/new-module.mjs",
     "check:clean": "node scripts/check-clean.mjs",
-    "check:api": "node scripts/check-api.mjs"
+    "check:api": "node scripts/check-api.mjs",
+    "check:deps": "node scripts/check-deps.mjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.62.0",
