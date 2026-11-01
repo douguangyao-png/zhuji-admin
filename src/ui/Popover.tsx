@@ -1,7 +1,7 @@
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
-import { createPortal } from 'react-dom';
+import * as RP from '@radix-ui/react-popover';
+import { useRef, useState, type ReactNode, type RefObject } from 'react';
 
-/** An anchored `.pop` (mockup app.js togglePop): below the anchor, flipped left or up when it would overflow. */
+/** An anchored `.pop`: below the anchor, Radix flips and shifts it to stay in view. Esc, outside click and focus return come from Radix. */
 export function Popover({ anchor, open, onClose, children, className = '', role, label }: {
   anchor: RefObject<HTMLElement | null>;
   open: boolean;
@@ -11,37 +11,27 @@ export function Popover({ anchor, open, onClose, children, className = '', role,
   role?: string;
   label?: string;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [pos, setPos] = useState<{ left: number; top: number }>({ left: 0, top: 0 });
-
-  useLayoutEffect(() => {
-    if (!open || !anchor.current || !ref.current) return;
-    const r = anchor.current.getBoundingClientRect();
-    const w = ref.current.offsetWidth, h = ref.current.offsetHeight;
-    const left = r.left + w > innerWidth - 12 ? r.right - w : r.left;
-    const up = r.bottom + 6 + h > innerHeight && r.top > h + 6;
-    setPos({ left: Math.max(8, left), top: up ? r.top - h - 6 : r.bottom + 6 });
-  }, [open, anchor]);
-
-  useEffect(() => {
-    if (!open) return;
-    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    const down = (e: MouseEvent) => {
-      const t = e.target as Node;
-      if (!ref.current?.contains(t) && !anchor.current?.contains(t)) onClose();
-    };
-    document.addEventListener('keydown', key);
-    document.addEventListener('mousedown', down);
-    return () => { document.removeEventListener('keydown', key); document.removeEventListener('mousedown', down); };
-  }, [open, onClose, anchor]);
-
-  if (!open) return null;
-  // 挂到 body：顶栏的 backdrop-filter 会让 fixed 相对顶栏定位，菜单被推出视口
-  return createPortal(
-    <div ref={ref} className={`pop ${className}`.trim()} role={role} aria-label={label} style={{ position: 'fixed', left: pos.left, top: pos.top }}>
-      {children}
-    </div>,
-    document.body,
+  // 挂到 body（Portal）：顶栏的 backdrop-filter 会让 fixed 相对顶栏定位，菜单被推出视口
+  return (
+    <RP.Root open={open} onOpenChange={(o) => { if (!o) onClose(); }}>
+      <RP.Anchor virtualRef={anchor as RefObject<HTMLElement>} />
+      <RP.Portal>
+        <RP.Content
+          className={`pop ${className}`.trim()}
+          role={role}
+          aria-label={label}
+          side="bottom"
+          align="start"
+          sideOffset={6}
+          collisionPadding={8}
+          style={{ position: 'relative' }}
+          // 点到锚点按钮上不当作「点外面」，由按钮自己的开关处理，否则会关了又开
+          onInteractOutside={(e) => { if (anchor.current?.contains(e.target as Node)) e.preventDefault(); }}
+        >
+          {children}
+        </RP.Content>
+      </RP.Portal>
+    </RP.Root>
   );
 }
 

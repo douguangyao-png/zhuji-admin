@@ -1,4 +1,5 @@
-import { useEffect, useId, useRef, type ReactNode } from 'react';
+import * as RD from '@radix-ui/react-dialog';
+import type { ReactNode } from 'react';
 import { Icon } from './Icon';
 
 /** The v2 `.dialog` shell for hand-written dialogs: header, body, footer, Esc and the scrim close it. */
@@ -13,27 +14,34 @@ export function Dialog({ title, sub, size, onClose, footer, children, className 
   className?: string;
   style?: React.CSSProperties;
 }) {
-  const id = useId();
-  const ref = useRef<HTMLDivElement>(null);
-  const close = useRef(onClose);
-  close.current = onClose;
-  useEffect(() => {
-    if (!ref.current?.contains(document.activeElement)) ref.current?.focus();
-    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') close.current(); };
-    document.addEventListener('keydown', key);
-    return () => document.removeEventListener('keydown', key);
-  }, []);
+  // 焦点陷阱、Esc（只关最上层）、关闭后焦点还原、aria 标记由 Radix 提供；外观沿用 .scrim / .dialog
   return (
-    <>
-      <div className="scrim" onClick={onClose} />
-      <div ref={ref} tabIndex={-1} className={`dialog${size ? ` ${size}` : ''} ${className}`.trim()} role="dialog" aria-modal="true" aria-labelledby={id} style={style}>
-        <div className="dlg-h">
-          <div><h3 id={id}>{title}</h3>{sub && <p>{sub}</p>}</div>
-          <button type="button" className="btn btn-g btn-sm btn-ic dlg-x" aria-label="关闭" title="关闭" onClick={onClose}><Icon name="x" /></button>
-        </div>
-        {children !== undefined && <div className="dlg-b">{children}</div>}
-        {footer && <div className="dlg-f">{footer}</div>}
-      </div>
-    </>
+    <RD.Root open onOpenChange={(o) => { if (!o) onClose(); }}>
+      <RD.Portal>
+        <RD.Overlay className="scrim" />
+        <RD.Content
+          tabIndex={-1}
+          {...(sub ? {} : { 'aria-describedby': undefined })}
+          className={`dialog${size ? ` ${size}` : ''} ${className}`.trim()}
+          style={style}
+          onOpenAutoFocus={(e) => {
+            // 保持原行为：页面里写了 autoFocus 的元素优先，否则焦点落在弹窗容器，而不是右上角的关闭钮
+            e.preventDefault();
+            const el = e.currentTarget as HTMLElement;
+            if (!el.contains(document.activeElement)) el.focus();
+          }}
+        >
+          <div className="dlg-h">
+            <div>
+              <RD.Title asChild><h3>{title}</h3></RD.Title>
+              {sub && <RD.Description asChild><p>{sub}</p></RD.Description>}
+            </div>
+            <button type="button" className="btn btn-g btn-sm btn-ic dlg-x" aria-label="关闭" title="关闭" onClick={onClose}><Icon name="x" /></button>
+          </div>
+          {children !== undefined && <div className="dlg-b">{children}</div>}
+          {footer && <div className="dlg-f">{footer}</div>}
+        </RD.Content>
+      </RD.Portal>
+    </RD.Root>
   );
 }

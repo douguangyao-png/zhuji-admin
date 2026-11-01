@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import * as RD from '@radix-ui/react-dialog';
 import { create } from 'zustand';
 import { Icon } from '@/ui/Icon';
 
@@ -25,38 +25,38 @@ export const confirm = (opts: ConfirmOpts): Promise<boolean> => {
 export function ConfirmHost() {
   const current = useConfirmStore((s) => s.current);
 
-  useEffect(() => {
-    if (!current) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') settle(false);
-    };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [current]);
-
   if (!current) return null;
   const { title, text, okLabel, danger } = current.opts;
+  // Esc 由 Radix 处理且只关最上层：确认框叠在对话框上时，Esc 只取消确认框
   return (
-    <>
-      <div className="scrim" onClick={() => settle(false)} />
-      <div className="dialog sm" role="alertdialog" aria-modal="true" aria-label={title}>
-        <div className="dlg-h"><div><h3>{title}</h3><p>{text}</p></div></div>
-        <div className="dlg-f">
-          <span className="grow" />
-          <button type="button" className="btn" onClick={() => settle(false)}><Icon name="x" />
-            取消
-          </button>
-          <button
-            type="button"
-            autoFocus
-            className={danger ? 'btn btn-ds' : 'btn btn-p'}
-            onClick={() => settle(true)}
-          ><Icon name="check" />
-            {okLabel ?? '确定'}
-          </button>
-        </div>
-      </div>
-    </>
+    <RD.Root open onOpenChange={(o) => { if (!o) settle(false); }}>
+      <RD.Portal>
+        <RD.Overlay className="scrim" />
+        <RD.Content className="dialog sm" role="alertdialog" tabIndex={-1} onOpenAutoFocus={(e) => {
+          // 焦点落在「确定」（原 autoFocus 行为）
+          e.preventDefault();
+          (e.currentTarget as HTMLElement).querySelector<HTMLElement>('[data-ok]')?.focus();
+        }}>
+          <div className="dlg-h">
+            <div><RD.Title asChild><h3>{title}</h3></RD.Title><RD.Description asChild><p>{text}</p></RD.Description></div>
+          </div>
+          <div className="dlg-f">
+            <span className="grow" />
+            <button type="button" className="btn" onClick={() => settle(false)}><Icon name="x" />
+              取消
+            </button>
+            <button
+              type="button"
+              data-ok
+              className={danger ? 'btn btn-ds' : 'btn btn-p'}
+              onClick={() => settle(true)}
+            ><Icon name="check" />
+              {okLabel ?? '确定'}
+            </button>
+          </div>
+        </RD.Content>
+      </RD.Portal>
+    </RD.Root>
   );
 }
 

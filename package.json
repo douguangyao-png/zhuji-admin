@@ -15,6 +15,8 @@
     "check:deps": "node scripts/check-deps.mjs"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.3.1",
+    "@radix-ui/react-popover": "^1.3.1",
     "@tanstack/react-query": "^5.62.0",
     "@tanstack/react-table": "^8.20.5",
     "marked": "^12.0.2",
