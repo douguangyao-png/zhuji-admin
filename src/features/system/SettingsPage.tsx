@@ -216,7 +216,8 @@ export function SettingsPage() {
         <div className="card-h b"><span className="card-t">模块</span><span className="card-s">{Object.values(s.features).filter(Boolean).length} 个模块已启用{diff.length ? `，${diff.length} 个与默认不同` : ''}</span>
           <button type="button" className="btn btn-sm push" disabled={!diff.length || save.isPending} title={diff.length ? undefined : '已是默认'} onClick={() => void resetFeatures()}><Icon name="refresh" />恢复默认模块</button>
         </div>
-        <table className="tbl" data-no-sort="功能开关，键值对排版">
+        {/* 不排序：功能开关，键值对排版 */}
+        <table className="tbl">
           <tbody>
             {(Object.keys(FEATURE_LABEL) as FeatureKey[]).map((k) => (
               <tr key={k}>

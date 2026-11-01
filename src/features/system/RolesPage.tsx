@@ -93,7 +93,8 @@ export function RolesPage() {
           </div>
           {guest && <div className="card-b fg3" role="note" style={{ paddingBottom: 0 }}>游客是不登录访问的人（角色键 guest，框架默认没有，需要公开页面时再建）：勾选的权限不登录的人也能访问；只要求登录、没有对应权限点的功能仍需登录。</div>}
           {all ? <div className="card-b fg3">系统管理员拥有全部权限，不能修改。</div> : (
-            <table className="tbl perm" data-no-sort="权限矩阵，不是列表">
+            // 不排序：权限矩阵，不是列表
+            <table className="tbl perm">
               <tbody>
                 {!guest && <ScopeRows value={scope} onChange={setScope} />}
                 {groups.map((g) => (

@@ -65,7 +65,8 @@ function LevelsForm({ value, workHours }: { value: MsgLevelPolicy; workHours?: s
       <div className="field">
         <label>按类型</label>
         <div style={{ overflowX: 'auto' }}>
-          <table className="tbl pol-tbl" data-no-sort="行内输入框按行位置保存">
+          {/* 不排序：行内输入框按行位置保存 */}
+          <table className="tbl pol-tbl">
             <thead><tr><th>类型</th><th>默认等级</th><th>待办等多久升为重要</th><th>等多久升为紧急</th><th /></tr></thead>
             <tbody>
               {f.kinds.map((k, i) => (
@@ -143,7 +144,8 @@ function PushForm({ value }: { value: MsgPushPolicy }) {
       <p className="fg3" style={{ fontSize: 12.5 }}>消息到了下面的等级就推到对应的群机器人。同一件事只推一次，多人收到的同一条消息也只推一次；群里只有等级、标题、单号和链接，标题里的手机号、身份证号打码。</p>
       <label className="sw-l"><button type="button" role="switch" aria-checked={f.enabled} aria-label="按等级推送" className={`sw${f.enabled ? ' on' : ''}`} onClick={() => setF({ ...f, enabled: !f.enabled })} />按消息等级推送到群</label>
       <label className="sw-l"><button type="button" role="switch" aria-checked={f.offHours} aria-label="非工作时间也推" className={`sw${f.offHours ? ' on' : ''}`} onClick={() => setF({ ...f, offHours: !f.offHours })} />非工作时间也推（关闭时等到下一个工作时间再推；工作时间在「基础配置」里设置）</label>
-      <table className="tbl" data-no-sort="固定 4 个等级，顺序有意义">
+      {/* 不排序：固定 4 个等级，顺序有意义 */}
+      <table className="tbl">
         <thead><tr><th style={{ width: 80 }}>等级</th><th>推到哪些群</th></tr></thead>
         <tbody>
           {LEVELS.map((l) => (

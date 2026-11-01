@@ -52,7 +52,8 @@ export function KvTable({ rows }: { rows: [string, ReactNode, boolean?][] }) {
     if (wide || !next || next[2]) { out.push(<tr key={k}><th>{k}</th><td colSpan={3}>{v}</td></tr>); i += 1; }
     else { out.push(<tr key={k}><th>{k}</th><td>{v}</td><th>{next[0]}</th><td>{next[1]}</td></tr>); i += 2; }
   }
-  return <table className="dp-kv" data-no-sort="打印版式的键值对排版"><tbody>{out}</tbody></table>;
+  // 不排序：打印版式的键值对排版
+  return <table className="dp-kv"><tbody>{out}</tbody></table>;
 }
 
 /** 按业务 id 取这张单据的全部审批记录 */
@@ -65,7 +66,8 @@ export function ApprovalTable({ list }: { list?: WfInstance[] }) {
   return (
     <>
       <h3>审批记录</h3>
-      <table data-no-sort="打印版式，环节顺序有意义">
+      {/* 不排序：打印版式，环节顺序有意义 */}
+      <table>
         <thead><tr><th>环节</th><th>处理人</th><th>结果</th><th>意见</th><th>时间</th></tr></thead>
         <tbody>
           {steps.map((s, i) => <tr key={i}><td>{s.node}</td><td>{s.userName}</td><td>{s.action}</td><td>{s.comment ?? ''}</td><td className="mono nw">{s.at.slice(0, 16)}</td></tr>)}

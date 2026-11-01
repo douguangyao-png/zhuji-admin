@@ -76,7 +76,8 @@ export function ImportDialog<T>({ title, name, cols, example, parse, preview, su
         {missing.length > 0 && <div className="note crit" role="alert"><Icon name="alert" /><span>表头缺少：{missing.join('、')}</span></div>}
         {rows.length > 0 && (
           <div style={{ maxHeight: 280, overflow: 'auto' }}>
-            <table className="tbl" data-no-sort="导入预览，行号对应导入文件的行">
+            {/* 不排序：导入预览，行号对应导入文件的行 */}
+            <table className="tbl">
               <thead><tr><th className="num">行</th>{preview.map((h) => <th key={h}>{h}</th>)}<th>校验</th></tr></thead>
               <tbody>{rows.map((x, i) => (
                 <tr key={i}>
