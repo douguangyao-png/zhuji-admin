@@ -50,7 +50,7 @@ describe('Dialog', () => {
     await user.keyboard('{Escape}');
     expect(closed).toHaveBeenCalledTimes(1);
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
-    expect(trigger).toHaveFocus();
+    await waitFor(() => expect(trigger).toHaveFocus()); // Radix 用 setTimeout 还原焦点
   });
 
   test('点遮罩关闭', async () => {
@@ -71,7 +71,7 @@ describe('Dialog', () => {
       return <Dialog title="选择" onClose={closed}><Select aria-label="类别" value={v} onChange={(e) => setV(e.target.value)}><option value="a">甲</option><option value="b">乙</option></Select></Dialog>;
     }
     render(<Host />);
-    const btn = await screen.findByRole('button', { name: '类别' });
+    const btn = await screen.findByRole('button', { name: '甲' });
     await user.click(btn);
     expect(await screen.findByRole('listbox')).toBeInTheDocument();
     await user.keyboard('{Escape}');
@@ -132,7 +132,7 @@ describe('Popover', () => {
     expect(await screen.findByRole('menu', { name: '操作' })).toBeInTheDocument();
     await user.keyboard('{Escape}');
     await waitFor(() => expect(screen.queryByRole('menu')).toBeNull());
-    expect(anchor).toHaveFocus();
+    await waitFor(() => expect(anchor).toHaveFocus());
   });
 
   test('点外面关闭；再点锚点按钮只开关一次，不会关了又开', async () => {
