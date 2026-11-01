@@ -146,7 +146,7 @@ export function MenusPage() {
           <button type="button" className="btn btn-sm btn-p" disabled={!dirty || errors.length > 0 || save.isPending} onClick={() => save.mutate(config)}><Icon name="check" />保存</button>
         </div>
         <div className="tw">
-          <table className="tbl">
+          <table className="tbl" data-no-sort="菜单配置，行序即菜单顺序">
             <thead><tr><th>菜单（默认名称）</th><th>层级</th><th>显示名称</th><th>上级菜单</th><th style={{ width: 100 }}>顺序</th></tr></thead>
             <tbody>
               {FIXED_MENUS.map((m) => (

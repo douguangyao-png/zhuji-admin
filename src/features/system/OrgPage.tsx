@@ -44,7 +44,7 @@ export function OrgPage() {
       <PageHead title="组织机构" sub={`${list.length} 个组织；人员、数据范围、审批里的「部门负责人」都按这里取。`}
         acts={<button type="button" className="btn btn-p" onClick={() => setEdit({ type: 'dept', parentId: 'C0' })}><Icon name="plus" />新增组织</button>} />
       <div className="card">
-        <table className="tbl">
+        <table className="tbl" data-no-sort="树形结构，排序会破坏层级">
           <thead><tr><th>名称</th><th>编码</th><th>类型</th><th>负责人</th><th className="num">人员</th><th /></tr></thead>
           <tbody>
             {rows.map(({ u, depth, hasChild }) => (

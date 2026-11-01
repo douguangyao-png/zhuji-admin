@@ -45,7 +45,7 @@ export function MyApprovalsCard() {
         <Link to="/approvals" className="link">全部<Icon name="right" /></Link>
       </div>
       {!list ? <div className="card-b fg3">加载中…</div> : list.items.length === 0 ? <div className="card-b fg3">还没有发起过审批。</div> : (
-        <table className="tbl">
+        <table className="tbl" data-no-sort="首页卡片列表，无表头">
           <tbody>
             {list.items.map((i) => (
               <tr key={i.id}>

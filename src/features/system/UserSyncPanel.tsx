@@ -59,7 +59,7 @@ export function UserSyncPanel() {
       <section className="stack">
         <h4>推送：外部系统调用本系统</h4>
         <p className="fg3">外部系统按工号批量推送人员，每次最多 1000 条，用 AppKey 和密钥做 HMAC-SM3 签名。字段、签名算法和错误码见接口文档《人员同步接口》。</p>
-        <table className="tbl">
+        <table className="tbl" data-no-sort="推送信息，键值对排版">
           <tbody>
             <tr><td style={{ width: 120 }}>推送地址</td><td className="mono">POST {pushUrl()}</td></tr>
             <tr><td>AppKey</td><td className="mono">{f.appKey || '未生成'}</td></tr>
@@ -134,7 +134,7 @@ function MapEditor({ title, value, options, onChange }: {
   const rows = Object.entries(value);
   const put = (i: number, k: string, v: string) => onChange(Object.fromEntries(rows.map((r, j) => (j === i ? [k, v] : r))));
   return (
-    <table className="tbl">
+    <table className="tbl" data-no-sort="取值映射，行内输入框按行位置保存">
       <thead><tr><th>{title} · 外部取值</th><th>本系统</th><th /></tr></thead>
       <tbody>
         {rows.map(([k, v], i) => (

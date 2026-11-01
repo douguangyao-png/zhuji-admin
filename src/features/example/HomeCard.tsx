@@ -15,7 +15,7 @@ export function RejectedCard() {
         <Link to="/example/mine?status=已驳回" className="link">去处理<Icon name="right" /></Link>
       </div>
       {!list ? <div className="card-b fg3">加载中…</div> : list.items.length === 0 ? <div className="card-b fg3">没有被驳回的登记。</div> : (
-        <table className="tbl">
+        <table className="tbl" data-no-sort="首页卡片摘要，无表头">
           <tbody>{list.items.map((x) => <tr key={x.id}><td className="mono">{x.no}</td><td>{x.title}</td></tr>)}</tbody>
         </table>
       )}
