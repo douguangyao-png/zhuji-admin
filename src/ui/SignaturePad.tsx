@@ -17,7 +17,7 @@ export function SignaturePad({ label, value, onChange, upload, height = 140 }: {
 }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
-  const timer = useRef<number>();
+  const timer = useRef<number | undefined>(undefined);
   const round = useRef(0);
   const [inked, setInked] = useState(Boolean(value));
   const [state, setState] = useState<'idle' | 'saving' | 'error'>('idle');

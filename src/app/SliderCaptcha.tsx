@@ -15,7 +15,7 @@ export function SliderCaptcha({ onPass }: { onPass: (token: string) => void }) {
   const box = useRef<HTMLDivElement>(null);
   const knob = useRef<HTMLDivElement>(null);
   const drag = useRef({ x0: 0, p0: 0, t0: 0, input: 'pointer' as CaptchaInput, track: [] as TrackPoint[] });
-  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const hintId = useId();
 
   const load = useCallback(async () => {
