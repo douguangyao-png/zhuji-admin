@@ -4,6 +4,20 @@ export interface Release { ver: string; date: string; note?: string; groups: { t
 
 export const RELEASES: Release[] = [
   {
+    ver: 'v1.2', date: '2026-11-01',
+    note: '所有列表支持点表头排序。',
+    groups: [
+      { title: '列表', items: [
+        { text: '点表头排序：点一次升序，再点降序，第三次取消排序；中文按拼音，数字按数值，日期按时间，空值始终排最后；排序后回到第 1 页。' },
+        { text: '键盘：Tab 到表头，按 Enter 或空格排序；表头带 aria-sort，读屏软件能读出当前排序方向。' },
+        { text: '系统管理、帮助、示例模块里的列表都已支持；组织机构（树形）、权限矩阵、菜单配置、导入预览等不是列表的表格不排序。' },
+      ] },
+      { title: '开发', items: [
+        { text: '直接写的表格用 useTableSort 和 SortTh；不排序的表格要写「不排序：原因」注释，test/table-sort.test.ts 检查，新增表格漏了会失败。' },
+      ] },
+    ],
+  },
+  {
     ver: 'v1.1', date: '2026-11-01',
     note: '升级到 React 19；弹窗和下拉菜单的键盘与焦点行为改用 Radix；新增依赖检查脚本。',
     groups: [
