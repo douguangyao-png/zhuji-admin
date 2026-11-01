@@ -39,6 +39,7 @@ npm run dev          # http://localhost:3500，跑在浏览器内的模拟后端
 | `npm test` | 单元测试和路由冒烟测试（vitest） |
 | `npm run build` | 构建（带模拟后端，演示用） |
 | `VITE_API=server npm run build` | 连真实后端构建，产物里不含模拟层代码 |
+| `npm run check:deps` | 对比依赖与 npm 上的最新版（只读；加 `-- --with <目录>` 可与另一个项目比较；连不上 npm 时非 0 退出） |
 | `npm run check:clean` | 扫描残留名称和旧前缀；同时检查两份 README 的二级标题数量一致 |
 | `npm run check:api` | 比对页面用到的接口和 `docs/接口约定.md` |
 
@@ -83,11 +84,12 @@ npm run new:module contract 合同管理        # 模块键、显示名、可选
 
 | 分类 | 技术 | 版本 | 用途 |
 | --- | --- | --- | --- |
-| 框架与语言 | React / React DOM | 18.3.1 | 界面 |
+| 框架与语言 | React / React DOM | 19.3.1 | 界面 |
 | 框架与语言 | TypeScript | 5.6.3 | 严格类型（`npm run build` 里先跑 `tsc`） |
 | 构建 | Vite（配 `@vitejs/plugin-react` 5.2.0） | 7.3.7 | 开发服务器和打包；构建目标 `chrome80`，相对路径，产物可挂在任意路径下；构建时加入 CSP meta |
 | 路由 | react-router-dom | 7.18.4 | 哈希路由（`createHashRouter`）、路由守卫 |
 | 数据请求与缓存 | TanStack Query | 5.104.3 | 所有页面的服务端数据 |
+| 弹窗与弹层 | Radix UI（`react-dialog`、`react-popover`） | 1.3.1 | 只提供行为、不带样式：焦点陷阱、Esc 只关最上层、关闭后焦点还原、ARIA 角色；外观仍是自带的 CSS |
 | 表格 | TanStack Table | 8.21.3 | 通用 `DataTable` 组件 |
 | 状态 | Zustand | 4.5.7 | 登录会话、主题、确认框、提示等小块客户端状态 |
 | Markdown 与图表 | marked | 12.0.2 | 帮助菜单里的项目文档（输出先过净化） |

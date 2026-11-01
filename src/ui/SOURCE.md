@@ -8,7 +8,7 @@ The components and style tokens here were first written for an internal admin fr
 | 基准提交 | `a65d626`（筑基 1.0.0 加许可证） |
 | 同步日期 | 2026-11-01 |
 | 许可证 | Apache-2.0（与仓库一致） |
-| 本地改动 | 全部为本仓库内改动 |
+| 本地改动 | 全部为本仓库内改动；`Dialog`、`Confirm`、`Popover` 的弹层行为改用 Radix（react-dialog、react-popover），`Tabs` 自带方向键切换 |
 | 图标 | `Icon.tsx` 为内联 SVG，线条风格，来源尚未逐个核对；如确认取自 Lucide（ISC），需补充其版权声明 |
 
 更新本目录时，同步修改上面的基准提交和同步日期；`npm run check:clean` 会检查本文件存在且含「同步日期」。

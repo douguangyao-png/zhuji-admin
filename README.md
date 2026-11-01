@@ -39,6 +39,7 @@ Demo accounts (password `demo`): `admin` (system administrator), `manager` (busi
 | `npm test` | Unit and route smoke tests (vitest) |
 | `npm run build` | Build with the mock backend (demo) |
 | `VITE_API=server npm run build` | Build against a real backend; the output contains no mock code |
+| `npm run check:deps` | Compare dependencies with the latest published versions (read-only; add `-- --with <dir>` to compare with another project; exits non-zero if the registry cannot be reached) |
 | `npm run check:clean` | Scan for leftover names and legacy prefixes; also checks that the two READMEs have the same number of second-level headings |
 | `npm run check:api` | Compare the APIs used by pages with `docs/接口约定.md` |
 
@@ -83,11 +84,12 @@ Versions are the ones resolved in `package-lock.json`; only what the code actual
 
 | Category | Technology | Version | Used for |
 | --- | --- | --- | --- |
-| Framework and language | React / React DOM | 18.3.1 | UI |
+| Framework and language | React / React DOM | 19.3.1 | UI |
 | Framework and language | TypeScript | 5.6.3 | Strict typing (`tsc` runs as part of `npm run build`) |
 | Build | Vite (with `@vitejs/plugin-react` 5.2.0) | 7.3.7 | Dev server and bundling; build target `chrome80`, relative base path so the output can be mounted anywhere; a CSP meta tag is added at build time |
 | Routing | react-router-dom | 7.18.4 | Hash routing (`createHashRouter`), route guards |
 | Data fetching and cache | TanStack Query | 5.104.3 | Server state for every page |
+| Dialogs and popovers | Radix UI (`react-dialog`, `react-popover`) | 1.3.1 | Behaviour only, no styles: focus trap, Esc closes the top layer, focus returns on close, ARIA roles. Looks come from our own CSS |
 | Tables | TanStack Table | 8.21.3 | The shared `DataTable` component |
 | State | Zustand | 4.5.7 | Session, theme, confirm dialog, toasts and other small client stores |
 | Markdown and diagrams | marked | 12.0.2 | Project documents in the help menu (output goes through the sanitizer) |

@@ -4,6 +4,21 @@ export interface Release { ver: string; date: string; note?: string; groups: { t
 
 export const RELEASES: Release[] = [
   {
+    ver: 'v1.1', date: '2026-11-01',
+    note: '升级到 React 19；弹窗和下拉菜单的键盘与焦点行为改用 Radix；新增依赖检查脚本。',
+    groups: [
+      { title: '界面', items: [
+        { text: '弹窗：打开后焦点进入弹窗，Tab 只在弹窗内循环，Esc 只关最上层，关闭后焦点回到打开它的按钮；确认框叠在对话框上时，Esc 只取消确认框。' },
+        { text: '下拉菜单和选择框：Esc 收起后焦点回到触发按钮；弹窗里的下拉按 Esc 只收起下拉。' },
+        { text: '页签：左右方向键、Home、End 在页签间切换，只有当前页签在 Tab 顺序里。' },
+      ] },
+      { title: '开发', items: [
+        { text: 'React 升到 19.3.1，类型和测试库同步升级；useRef 一律写初始值。' },
+        { text: 'npm run check:deps：对比依赖和最新版，可与另一个项目比较；src/ui/SOURCE.md 记录组件来源，check:clean 会检查它存在。' },
+      ] },
+    ],
+  },
+  {
     ver: 'v1.0', date: '2026-10-31',
     note: '第一个版本：登录与权限、系统管理、首页、消息、审批、帮助与问题反馈，一个示例模块和新模块生成脚本。',
     groups: [
