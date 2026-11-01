@@ -10,6 +10,8 @@ import { useMeSure } from '@/core/me';
 import { Op } from '@/core/op';
 import { useDictItems } from '@/features/system/DictText';
 import { fmtMoney } from '@/lib/format';
+import { useTableSort } from '@/ui/useTableSort';
+import { SortTh } from '@/ui/SortTh';
 import { today } from '@/lib/time';
 import { deleteConfirm } from '@/ui/Confirm';
 import { Dialog } from '@/ui/Dialog';
@@ -41,6 +43,7 @@ export function ExamplePage({ mine }: { mine?: boolean }) {
   const remove = useMutation({ mutationFn: exampleApi.remove, onSuccess: () => { void refresh(); toast('已删除'); }, onError: fail });
   const submit = useMutation({ mutationFn: exampleApi.submit, onSuccess: (x) => { void refresh(); void qc.invalidateQueries({ queryKey: ['todos'] }); toast(`已提交审批，单号 ${x.no}`); }, onError: fail });
   const rows = list.data?.items ?? [];
+  const sort = useTableSort(rows, { no: (x) => x.no, title: (x) => x.title, cat: (x) => catName(x.category), amount: (x) => x.amount, date: (x) => x.date, status: (x) => x.status, owner: (x) => x.ownerName });
   const editable = (x: ExampleItem) => x.ownerId === me.user.id && (x.status === '草稿' || x.status === '已驳回');
 
   const exportRows = () => downloadCsv(`示例登记-${today()}`, ['单号', '标题', '类别', '金额', '日期', '状态', '登记人', '部门'],
@@ -63,9 +66,9 @@ export function ExamplePage({ mine }: { mine?: boolean }) {
         </div>
         {!list.data ? <Loading /> : !rows.length ? <Empty text="没有登记" sub="点右上角「新增登记」录一条。" /> : (
           <table className="tbl">
-            <thead><tr><th>单号</th><th>标题</th><th>类别</th><th className="num">金额</th><th>日期</th><th>状态</th>{!mine && <th>登记人</th>}<th /></tr></thead>
+            <thead><tr><SortTh sort={sort} k="no">单号</SortTh><SortTh sort={sort} k="title">标题</SortTh><SortTh sort={sort} k="cat">类别</SortTh><SortTh sort={sort} k="amount" className="num">金额</SortTh><SortTh sort={sort} k="date">日期</SortTh><SortTh sort={sort} k="status">状态</SortTh>{!mine && <SortTh sort={sort} k="owner">登记人</SortTh>}<th /></tr></thead>
             <tbody>
-              {rows.map((x) => (
+              {sort.rows.map((x) => (
                 <tr key={x.id}>
                   <td className="mono">{x.no || '—'}</td>
                   <td>{x.title}</td>

@@ -1,4 +1,6 @@
 import { useEffect, useRef } from 'react';
+import { SortTh } from '@/ui/SortTh';
+import { useTableSort } from '@/ui/useTableSort';
 import { Link, useSearchParams } from 'react-router-dom';
 import { PageHead } from '@/core/bits';
 import { useFeatures, useMeSure } from '@/core/me';
@@ -31,13 +33,14 @@ function Steps({ steps }: { steps: NonNullable<Section['steps']> }) {
 
 function Tbl({ t }: { t: Table }) {
   const { text } = useMenuNames();
+  const sort = useTableSort(t.rows, Object.fromEntries(t.head.map((_, i) => [String(i), (r: string[]) => r[i]])));
   return (
   <div className="card hg-tbl">
     <div className="card-h b"><span className="card-t">{t.title}</span></div>
     <div className="tw">
       <table className="tbl">
-        <thead><tr>{t.head.map((h) => <th key={h}>{h}</th>)}</tr></thead>
-        <tbody>{t.rows.map((r) => <tr key={r[0]}>{r.map((c, i) => <td key={i}>{i === 0 ? <b>{text(c)}</b> : text(c)}</td>)}</tr>)}</tbody>
+        <thead><tr>{t.head.map((h, i) => <SortTh key={h} sort={sort} k={String(i)}>{h}</SortTh>)}</tr></thead>
+        <tbody>{sort.rows.map((r) => <tr key={r[0]}>{r.map((c, i) => <td key={i}>{i === 0 ? <b>{text(c)}</b> : text(c)}</td>)}</tr>)}</tbody>
       </table>
     </div>
   </div>

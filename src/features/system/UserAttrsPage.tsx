@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { SortTh } from '@/ui/SortTh';
+import { useTableSort } from '@/ui/useTableSort';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { coreApi } from '@/api/core';
 import type { UserAttrDef, UserAttrType } from '@/api/types';
@@ -47,42 +49,54 @@ export function UserAttrsPage() {
     if (await confirm({ title: `删除属性 · ${d.name}`, text: DELETE_ATTR_TEXT, okLabel: '删除', danger: true })) remove.mutate(d);
   };
   const busy = toggle.isPending || remove.isPending;
+  // 内置属性在前、扩展属性在后合成一张表排序；不排序时保持这个顺序
+  const merged = [...base.map((d) => ({ base: true as const, d })), ...defs.map((d) => ({ base: false as const, d }))];
+  const sort = useTableSort(merged, {
+    name: (x) => x.d.name,
+    type: (x) => ATTR_TYPE_LABEL[x.d.type],
+    maxLen: (x) => (x.base || x.d.type === 'text' ? x.d.maxLen : null),
+    options: (x) => (x.base ? null : x.d.options?.join('、')),
+    source: (x) => (x.base ? '内置' : (x.d as UserAttrDef).builtin ? '预置' : '扩展'),
+    state: (x) => (x.base ? '启用' : (x.d as UserAttrDef).enabled ? '启用' : '作废'),
+    sort: (x) => x.d.sort,
+  });
+  const baseRow = (d: (typeof base)[number]) => (
+    <tr key={d.key}>
+      <td><b>{d.name}</b></td>
+      <td>{ATTR_TYPE_LABEL[d.type]}</td>
+      <td>{d.maxLen} 字</td>
+      <td>—</td>
+      <td><Tag tone="info">内置</Tag></td>
+      <td><Tag tone="good">启用</Tag></td>
+      <td className="mono">{d.sort}</td>
+      <td className="act"><span className="fg3">所有人通用，不能删除或作废</span></td>
+    </tr>
+  );
+  const defRow = (d: UserAttrDef) => (
+    <tr key={d.key}>
+      <td><b>{d.name}</b></td>
+      <td>{ATTR_TYPE_LABEL[d.type]}</td>
+      <td>{d.type === 'text' ? `${d.maxLen} 字` : '—'}</td>
+      <td style={{ whiteSpace: 'normal' }}>{d.options?.join('、') || '—'}</td>
+      <td>{d.builtin ? <Tag tone="info">预置</Tag> : <span className="fg3">扩展</span>}</td>
+      <td><Tag tone={d.enabled ? 'good' : 'flat'}>{d.enabled ? '启用' : '作废'}</Tag></td>
+      <td className="mono">{d.sort}</td>
+      <td className="act">
+        <button type="button" className="btn btn-xs btn-o" aria-label={`编辑 ${d.name}`} onClick={() => setEdit(d)}><Icon name="pencil" />编辑</button>
+        {!d.builtin && <button type="button" className="btn btn-xs btn-g" disabled={busy} onClick={() => toggle.mutate(d)}><Icon name="power" />{d.enabled ? '作废' : '启用'}</button>}
+        {!d.builtin && <button type="button" className="btn btn-xs btn-ds" aria-label={`删除 ${d.name}`} disabled={busy} onClick={() => void askDelete(d)}><Icon name="trash" />删除</button>}
+      </td>
+    </tr>
+  );
   return (
     <div className="page">
       <PageHead title="人员属性" sub="账号、姓名、性别、证件号码、手机号是所有人通用的内置属性，不能删除或作废；其余是扩展属性，可以作废（不显示，数据保留）、再启用或删除；「人员」页显示全部启用的属性。"
         acts={<button type="button" className="btn btn-p" onClick={() => setEdit({ type: 'text', maxLen: 64, sort: 100, enabled: true })}><Icon name="plus" />新增属性</button>} />
       <div className="card">
         <table className="tbl">
-          <thead><tr><th>名称</th><th>类型</th><th>最大长度</th><th>下拉选项</th><th>来源</th><th>状态</th><th>排序</th><th /></tr></thead>
+          <thead><tr><SortTh sort={sort} k="name">名称</SortTh><SortTh sort={sort} k="type">类型</SortTh><SortTh sort={sort} k="maxLen">最大长度</SortTh><SortTh sort={sort} k="options">下拉选项</SortTh><SortTh sort={sort} k="source">来源</SortTh><SortTh sort={sort} k="state">状态</SortTh><SortTh sort={sort} k="sort">排序</SortTh><th /></tr></thead>
           <tbody>
-            {base.map((d) => (
-              <tr key={d.key}>
-                <td><b>{d.name}</b></td>
-                <td>{ATTR_TYPE_LABEL[d.type]}</td>
-                <td>{d.maxLen} 字</td>
-                <td>—</td>
-                <td><Tag tone="info">内置</Tag></td>
-                <td><Tag tone="good">启用</Tag></td>
-                <td className="mono">{d.sort}</td>
-                <td className="act"><span className="fg3">所有人通用，不能删除或作废</span></td>
-              </tr>
-            ))}
-            {defs.map((d) => (
-              <tr key={d.key}>
-                <td><b>{d.name}</b></td>
-                <td>{ATTR_TYPE_LABEL[d.type]}</td>
-                <td>{d.type === 'text' ? `${d.maxLen} 字` : '—'}</td>
-                <td style={{ whiteSpace: 'normal' }}>{d.options?.join('、') || '—'}</td>
-                <td>{d.builtin ? <Tag tone="info">预置</Tag> : <span className="fg3">扩展</span>}</td>
-                <td><Tag tone={d.enabled ? 'good' : 'flat'}>{d.enabled ? '启用' : '作废'}</Tag></td>
-                <td className="mono">{d.sort}</td>
-                <td className="act">
-                  <button type="button" className="btn btn-xs btn-o" aria-label={`编辑 ${d.name}`} onClick={() => setEdit(d)}><Icon name="pencil" />编辑</button>
-                  {!d.builtin && <button type="button" className="btn btn-xs btn-g" disabled={busy} onClick={() => toggle.mutate(d)}><Icon name="power" />{d.enabled ? '作废' : '启用'}</button>}
-                  {!d.builtin && <button type="button" className="btn btn-xs btn-ds" aria-label={`删除 ${d.name}`} disabled={busy} onClick={() => void askDelete(d)}><Icon name="trash" />删除</button>}
-                </td>
-              </tr>
-            ))}
+            {sort.rows.map((x) => (x.base ? baseRow(x.d) : defRow(x.d as UserAttrDef)))}
           </tbody>
         </table>
       </div>

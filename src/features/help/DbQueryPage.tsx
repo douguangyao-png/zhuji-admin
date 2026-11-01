@@ -9,6 +9,8 @@ import { Dialog } from '@/ui/Dialog';
 import { Icon } from '@/ui/Icon';
 import { Empty, Loading } from '@/ui/primitives';
 import { Tabs } from '@/ui/Tabs';
+import { SortTh } from '@/ui/SortTh';
+import { useTableSort } from '@/ui/useTableSort';
 import { toast } from '@/ui/Toast';
 import './help.css';
 import { groupTables, sqlProblem, SQL_MAX_ROWS, type DbResult, type DbStructure, type DbTable } from './sql';
@@ -137,20 +139,8 @@ export function DbQueryPage() {
             !cur ? <Empty text="在左边选一张表" sub="可以看列的名称、类型、是否可空、默认值、说明和索引。" /> : structure.isLoading ? <Loading /> : structure.isError ? <div className="card-b fg3">{(structure.error as Error).message}</div> : (
               <div className="card-b stack">
                 <div className="row"><b className="mono">{cur}</b><span className="push" /><button type="button" className="btn btn-sm" onClick={() => sample(cur)}><Icon name="search" />查询前 100 行</button></div>
-                <table className="tbl" aria-label="表结构">
-                  <thead><tr><th>列名</th><th>类型</th><th>可空</th><th>默认值</th><th>说明</th></tr></thead>
-                  <tbody>
-                    {structure.data!.columns.map((c) => (
-                      <tr key={c.name}><td className="mono">{c.name}</td><td className="mono">{c.type}</td><td>{c.nullable ? '是' : '否'}</td><td className="mono fg3">{c.default ?? ''}</td><td className="fg3">{c.comment ?? ''}</td></tr>
-                    ))}
-                  </tbody>
-                </table>
-                {structure.data!.indexes.length > 0 && (
-                  <table className="tbl" aria-label="索引">
-                    <thead><tr><th>索引</th><th>定义</th></tr></thead>
-                    <tbody>{structure.data!.indexes.map((i) => <tr key={i.name}><td className="mono">{i.name}</td><td className="mono fg3" style={{ whiteSpace: 'normal' }}>{i.def}</td></tr>)}</tbody>
-                  </table>
-                )}
+                <StructColumns columns={structure.data!.columns} />
+                {structure.data!.indexes.length > 0 && <StructIndexes indexes={structure.data!.indexes} />}
               </div>
             )
           ) : (
@@ -184,5 +174,29 @@ export function DbQueryPage() {
         </Dialog>
       )}
     </div>
+  );
+}
+
+function StructColumns({ columns }: { columns: DbStructure['columns'] }) {
+  const sort = useTableSort(columns, { name: (c) => c.name, type: (c) => c.type, nullable: (c) => c.nullable, default: (c) => c.default, comment: (c) => c.comment });
+  return (
+    <table className="tbl" aria-label="表结构">
+      <thead><tr><SortTh sort={sort} k="name">列名</SortTh><SortTh sort={sort} k="type">类型</SortTh><SortTh sort={sort} k="nullable">可空</SortTh><SortTh sort={sort} k="default">默认值</SortTh><SortTh sort={sort} k="comment">说明</SortTh></tr></thead>
+      <tbody>
+        {sort.rows.map((c) => (
+          <tr key={c.name}><td className="mono">{c.name}</td><td className="mono">{c.type}</td><td>{c.nullable ? '是' : '否'}</td><td className="mono fg3">{c.default ?? ''}</td><td className="fg3">{c.comment ?? ''}</td></tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function StructIndexes({ indexes }: { indexes: DbStructure['indexes'] }) {
+  const sort = useTableSort(indexes, { name: (i) => i.name, def: (i) => i.def });
+  return (
+    <table className="tbl" aria-label="索引">
+      <thead><tr><SortTh sort={sort} k="name">索引</SortTh><SortTh sort={sort} k="def">定义</SortTh></tr></thead>
+      <tbody>{sort.rows.map((i) => <tr key={i.name}><td className="mono">{i.name}</td><td className="mono fg3" style={{ whiteSpace: 'normal' }}>{i.def}</td></tr>)}</tbody>
+    </table>
   );
 }

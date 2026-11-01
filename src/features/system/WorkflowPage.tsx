@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { SortTh } from '@/ui/SortTh';
+import { useTableSort } from '@/ui/useTableSort';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { coreApi } from '@/api/core';
 import { PERM_GROUPS, PERM_LABEL } from '@/api/perms';
@@ -32,6 +34,7 @@ export function WorkflowPage() {
     mutationFn: coreApi.saveWfDef,
     onSuccess: () => { void qc.invalidateQueries({ queryKey: ['wf-defs'] }); },
   });
+  const sort = useTableSort(defs.data ?? [], { name: (d) => d.name, nodes: (d) => d.nodes.map((n) => n.name).join('、'), active: (d) => d.active });
   if (!defs.data) return <div className="page"><Loading /></div>;
   const roleName = (k: string) => roles.find((r) => r.key === k)?.name ?? k;
   const who = (a: ApproverRule) => a.kind === 'role' ? roleName(a.role) : a.kind === 'roleOrManager' ? `${roleName(a.role)} / 业务负责人（任一）`
@@ -44,9 +47,9 @@ export function WorkflowPage() {
       <PolicyCards defs={defs.data} roles={roles.map((r) => ({ key: r.key, name: r.name }))} />
       <div className="card">
         <table className="tbl">
-          <thead><tr><th>单据</th><th>节点</th><th>启用</th><th /></tr></thead>
+          <thead><tr><SortTh sort={sort} k="name">单据</SortTh><SortTh sort={sort} k="nodes">节点</SortTh><SortTh sort={sort} k="active">启用</SortTh><th /></tr></thead>
           <tbody>
-            {defs.data.map((d) => (
+            {sort.rows.map((d) => (
               <tr key={d.type}>
                 <td><b>{d.name}</b></td>
                 <td style={{ whiteSpace: 'normal', padding: '10px 12px' }}>

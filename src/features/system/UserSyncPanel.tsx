@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { SortTh } from '@/ui/SortTh';
+import { useTableSort } from '@/ui/useTableSort';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { coreApi } from '@/api/core';
 import type { UserSyncConfig, UserSyncField, UserSyncLog, UserSyncMode } from '@/api/types';
@@ -152,6 +154,7 @@ function MapEditor({ title, value, options, onChange }: {
 
 function SyncLogs() {
   const logs = useQuery({ queryKey: ['user-sync-logs'], queryFn: coreApi.userSyncLogs }).data ?? [];
+  const sort = useTableSort(logs, { at: (l) => l.at, mode: (l) => MODE[l.mode] ?? l.mode, total: (l) => l.total, added: (l) => l.added, updated: (l) => l.updated, unchanged: (l) => l.unchanged, skipped: (l) => l.skipped, failed: (l) => l.failed, disabled: (l) => l.disabled, ok: (l) => l.ok });
   const download = async (l: UserSyncLog) => {
     const d = await coreApi.userSyncLog(l.id);
     downloadCsv(`人员同步明细-${l.at.replace(/[: ]/g, '')}`, ['序号', '工号', '姓名', '结果', '原因'], d.lines.map((x) => [x.row ?? '', x.no, x.name, x.result, x.reason ?? '']));
@@ -161,9 +164,9 @@ function SyncLogs() {
       <h4>同步记录</h4>
       {!logs.length ? <p className="fg3">还没有同步记录。外部推送、定时拉取和立即同步都会记在这里。</p> : (
         <table className="tbl">
-          <thead><tr><th>时间</th><th>方式</th><th className="num">收到</th><th className="num">新增</th><th className="num">更新</th><th className="num">无变化</th><th className="num">跳过</th><th className="num">失败</th><th className="num">停用</th><th>结果</th><th /></tr></thead>
+          <thead><tr><SortTh sort={sort} k="at">时间</SortTh><SortTh sort={sort} k="mode">方式</SortTh><SortTh sort={sort} k="total" className="num">收到</SortTh><SortTh sort={sort} k="added" className="num">新增</SortTh><SortTh sort={sort} k="updated" className="num">更新</SortTh><SortTh sort={sort} k="unchanged" className="num">无变化</SortTh><SortTh sort={sort} k="skipped" className="num">跳过</SortTh><SortTh sort={sort} k="failed" className="num">失败</SortTh><SortTh sort={sort} k="disabled" className="num">停用</SortTh><SortTh sort={sort} k="ok">结果</SortTh><th /></tr></thead>
           <tbody>
-            {logs.map((l) => (
+            {sort.rows.map((l) => (
               <tr key={l.id}>
                 <td className="mono">{l.at}</td><td>{MODE[l.mode] ?? l.mode}</td>
                 <td className="num">{l.total}</td><td className="num">{l.added}</td><td className="num">{l.updated}</td><td className="num">{l.unchanged}</td>

@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { SortTh } from '@/ui/SortTh';
+import { useTableSort } from '@/ui/useTableSort';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { coreApi } from '@/api/core';
 import type { DictItem } from '@/api/types';
@@ -27,6 +29,8 @@ export function DictPage() {
   const hasChildren = curType ? childrenOf(curType.key).length > 0 : false;
   const items = useQuery({ queryKey: ['dicts', cur, 'all'], queryFn: () => coreApi.dicts(cur, true), enabled: Boolean(cur) && !hasChildren }).data ?? [];
   const removed = useQuery({ queryKey: ['dicts', 'removed', cur], queryFn: () => coreApi.removedDicts(cur), enabled: Boolean(cur) && !hasChildren }).data ?? [];
+  const sort = useTableSort(items, { code: (d) => d.code, name: (d) => d.name, sort: (d) => d.sort, active: (d) => d.active });
+  const sortRemoved = useTableSort(removed, { code: (d) => d.code, name: (d) => d.name });
   const [showRemoved, setShowRemoved] = useState(false);
   const [name, setName] = useState('');
   const refresh = () => { void qc.invalidateQueries({ queryKey: ['dicts'] }); void qc.invalidateQueries({ queryKey: ['dict-types'] }); };
@@ -106,9 +110,9 @@ export function DictPage() {
                 <button type="button" className="btn btn-sm" disabled={!removed.length} onClick={() => setShowRemoved(true)}><Icon name="archive" />已删除{removed.length ? `（${removed.length}）` : ''}</button>
               </div>
               <table className="tbl">
-                <thead><tr><th style={{ width: 70 }}>编码</th><th>名称</th><th style={{ width: 90 }}>排序号</th><th style={{ width: 90 }}>启用</th><th style={{ width: 60 }} /></tr></thead>
+                <thead><tr><SortTh sort={sort} k="code" style={{ width: 70 }}>编码</SortTh><SortTh sort={sort} k="name">名称</SortTh><SortTh sort={sort} k="sort" style={{ width: 90 }}>排序号</SortTh><SortTh sort={sort} k="active" style={{ width: 90 }}>启用</SortTh><th style={{ width: 60 }} /></tr></thead>
                 <tbody>
-                  {items.map((d) => (
+                  {sort.rows.map((d) => (
                     <tr key={d.id}>
                       <td className="mono">{d.code}</td>
                       <td><input className="input in-line" defaultValue={d.name} aria-label="名称"
@@ -131,8 +135,8 @@ export function DictPage() {
           footer={<button type="button" className="btn" onClick={() => setShowRemoved(false)}><Icon name="x" />关闭</button>}>
           {removed.length === 0 ? <p className="fg3">没有已删除的字典项。</p> : (
             <table className="tbl">
-              <thead><tr><th style={{ width: 70 }}>编码</th><th>名称</th><th style={{ width: 80 }} /></tr></thead>
-              <tbody>{removed.map((d) => (
+              <thead><tr><SortTh sort={sortRemoved} k="code" style={{ width: 70 }}>编码</SortTh><SortTh sort={sortRemoved} k="name">名称</SortTh><th style={{ width: 80 }} /></tr></thead>
+              <tbody>{sortRemoved.rows.map((d) => (
                 <tr key={d.id}><td className="mono">{d.code}</td><td>{d.name}</td>
                   <td className="act"><button type="button" className="btn btn-xs" disabled={restore.isPending} onClick={() => restore.mutate(d.id)}><Icon name="refresh" />恢复</button></td></tr>
               ))}</tbody>

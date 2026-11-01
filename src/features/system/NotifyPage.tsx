@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { SortTh } from '@/ui/SortTh';
+import { useTableSort } from '@/ui/useTableSort';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { coreApi } from '@/api/core';
 import type { GroupChannel, MsgGroup, MsgRule } from '@/api/types';
@@ -34,12 +36,13 @@ function Rules() {
   const [edit, setEdit] = useState<MsgRule | null>(null);
   const save = useMutation({ mutationFn: coreApi.saveMsgRule, onSuccess: () => void qc.invalidateQueries({ queryKey: ['msg-rules'] }) });
   const name = (id: string) => groups.find((g) => g.id === id);
+  const sort = useTableSort(rules, { name: (r) => `${r.module}${r.name}`, when: (r) => r.when, to: (r) => [r.site ? '站内消息' : '', ...r.groupIds.map((id) => name(id)?.name ?? '')].join(' '), enabled: (r) => r.enabled });
   return (
     <>
       <table className="tbl">
-        <thead><tr><th>事件</th><th>什么时候发</th><th>发到</th><th>启用</th><th /></tr></thead>
+        <thead><tr><SortTh sort={sort} k="name">事件</SortTh><SortTh sort={sort} k="when">什么时候发</SortTh><SortTh sort={sort} k="to">发到</SortTh><SortTh sort={sort} k="enabled">启用</SortTh><th /></tr></thead>
         <tbody>
-          {rules.map((r) => (
+          {sort.rows.map((r) => (
             <tr key={r.id}>
               <td><span className="fg3">{r.module} · </span><b>{r.name}</b></td>
               <td className="fg3">{r.when}</td>
@@ -101,6 +104,7 @@ function RuleDialog({ rule, groups, onClose }: { rule: MsgRule; groups: MsgGroup
 function Groups() {
   const qc = useQueryClient();
   const groups = useQuery({ queryKey: ['msg-groups'], queryFn: coreApi.msgGroups }).data ?? [];
+  const sort = useTableSort(groups, { name: (g) => g.name, channel: (g) => g.channel, webhook: (g) => g.webhook, secret: (g) => (g.channel === 'dingtalk' ? (g.secret ? '已配置' : '未配置') : ''), enabled: (g) => g.enabled });
   const [edit, setEdit] = useState<Partial<MsgGroup> | null>(null);
   const test = useMutation({ mutationFn: coreApi.testMsgGroup, onSuccess: (r) => { toast(r.detail); void qc.invalidateQueries({ queryKey: ['msg-log'] }); }, onError: (e: Error) => toast(e.message, { tone: 'bad' }) });
   const del = useMutation({ mutationFn: coreApi.deleteMsgGroup, onSuccess: () => void qc.invalidateQueries({ queryKey: ['msg-groups'] }), onError: (e: Error) => toast(e.message, { tone: 'bad' }) });
@@ -112,9 +116,9 @@ function Groups() {
         <button type="button" className="btn btn-sm" onClick={() => setEdit({ channel: 'wecom', enabled: true })}><Icon name="plus" />添加群</button>
       </div>
       <table className="tbl">
-        <thead><tr><th>群</th><th>渠道</th><th>Webhook</th><th>加签</th><th>状态</th><th /></tr></thead>
+        <thead><tr><SortTh sort={sort} k="name">群</SortTh><SortTh sort={sort} k="channel">渠道</SortTh><SortTh sort={sort} k="webhook">Webhook</SortTh><SortTh sort={sort} k="secret">加签</SortTh><SortTh sort={sort} k="enabled">状态</SortTh><th /></tr></thead>
         <tbody>
-          {groups.map((g) => (
+          {sort.rows.map((g) => (
             <tr key={g.id}>
               <td><b>{g.name}</b></td>
               <td><span className={`bd ch-${g.channel}`}>{CH[g.channel]}</span></td>

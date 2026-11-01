@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { SortTh } from '@/ui/SortTh';
+import { useTableSort } from '@/ui/useTableSort';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { coreApi } from '@/api/core';
 import type { DeviceEndpoint, SsoKind, SsoProvider } from '@/api/types';
@@ -48,12 +50,13 @@ function SsoList() {
   const list = useQuery({ queryKey: ['sso-config'], queryFn: coreApi.ssoConfig }).data ?? [];
   const [edit, setEdit] = useState<SsoProvider | null>(null);
   const test = useTest();
+  const sort = useTableSort(list, { name: (p) => p.name, how: (p) => SSO_HOW[p.id], match: (p) => p.matchBy, state: (p) => p.enabled });
   return (
     <>
       <table className="tbl">
-        <thead><tr><th>方式</th><th>说明</th><th>人员对应</th><th>状态</th><th /></tr></thead>
+        <thead><tr><SortTh sort={sort} k="name">方式</SortTh><SortTh sort={sort} k="how">说明</SortTh><SortTh sort={sort} k="match">人员对应</SortTh><SortTh sort={sort} k="state">状态</SortTh><th /></tr></thead>
         <tbody>
-          {list.map((p) => (
+          {sort.rows.map((p) => (
             <tr key={p.id}>
               <td><b>{p.name}</b></td>
               <td className="wrap fg3">{SSO_HOW[p.id]}</td>
@@ -103,12 +106,13 @@ function DeviceList() {
   const list = useQuery({ queryKey: ['devices'], queryFn: coreApi.devices }).data ?? [];
   const [edit, setEdit] = useState<DeviceEndpoint | null>(null);
   const test = useTest();
+  const sort = useTableSort(list, { name: (d) => d.name, usedBy: (d) => d.usedBy, impl: (d) => `${d.impl}${d.vendor ?? ''}`, address: (d) => d.address, state: (d) => d.enabled });
   return (
     <>
       <table className="tbl">
-        <thead><tr><th>接口</th><th>用于</th><th>实现</th><th>地址</th><th>状态</th><th /></tr></thead>
+        <thead><tr><SortTh sort={sort} k="name">接口</SortTh><SortTh sort={sort} k="usedBy">用于</SortTh><SortTh sort={sort} k="impl">实现</SortTh><SortTh sort={sort} k="address">地址</SortTh><SortTh sort={sort} k="state">状态</SortTh><th /></tr></thead>
         <tbody>
-          {list.map((d) => (
+          {sort.rows.map((d) => (
             <tr key={d.id}>
               <td><b>{d.name}</b></td>
               <td className="wrap fg3">{d.usedBy}</td>
@@ -156,12 +160,13 @@ function LogList() {
   const devices = useQuery({ queryKey: ['devices'], queryFn: coreApi.devices }).data ?? [];
   const sso = useQuery({ queryKey: ['sso-config'], queryFn: coreApi.ssoConfig }).data ?? [];
   const name = (id: string) => devices.find((d) => d.id === id)?.name ?? sso.find((p) => p.id === id)?.name ?? id;
+  const sort = useTableSort(logs, { at: (l) => l.at, ep: (l) => name(l.endpointId), action: (l) => l.action, ok: (l) => l.ok, detail: (l) => l.detail });
   if (!logs.length) return <div className="empty"><h4>还没有调用记录</h4><p>测试连接、模拟刷卡开门、打印标签等操作会记在这里</p></div>;
   return (
     <table className="tbl">
-      <thead><tr><th>时间</th><th>接口</th><th>动作</th><th>结果</th><th>说明</th></tr></thead>
+      <thead><tr><SortTh sort={sort} k="at">时间</SortTh><SortTh sort={sort} k="ep">接口</SortTh><SortTh sort={sort} k="action">动作</SortTh><SortTh sort={sort} k="ok">结果</SortTh><SortTh sort={sort} k="detail">说明</SortTh></tr></thead>
       <tbody>
-        {logs.map((l) => (
+        {sort.rows.map((l) => (
           <tr key={l.id}><td className="mono">{l.at}</td><td>{name(l.endpointId)}</td><td>{l.action}</td><td><Tag tone={l.ok ? 'good' : 'bad'}>{l.ok ? '成功' : '失败'}</Tag></td><td className="wrap fg3">{l.detail}</td></tr>
         ))}
       </tbody>
