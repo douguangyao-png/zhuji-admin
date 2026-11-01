@@ -51,7 +51,7 @@ test('守卫拦得住：没排序也没登记的表格会被报出，写了「�
   const plain = 'const A = () => <table><thead><tr><th>名称</th></tr></thead><tbody /></table>;';
   expect(unsortedTables(plain, at)).toHaveLength(1);
   expect(unsortedTables(plain.replace('<table>', '<div>{/* 不排序：打印版式 */}\n<table>').replace('</table>;', '</table></div>;'), at)).toEqual([]);
-  expect(unsortedTables(`// 不排序：键值对\nconst A = () => { return <table><tbody /></table>; }`, at)).toEqual([]);
+  expect(unsortedTables(`const A = () => {\n  // 不排序：键值对\n  return <table><tbody /></table>;\n}`, at)).toEqual([]);
   expect(unsortedTables(`const A = () => (\n  // 不排序：卡片摘要\n  <table><tbody /></table>\n);`, at)).toEqual([]);
   expect(unsortedTables(plain.replace('<th>名称</th>', '<SortTh sort={s} k="a">名称</SortTh>'), at)).toEqual([]);
   // 原因为空、或只是一条别的注释，都不算登记
