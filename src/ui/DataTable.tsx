@@ -1,4 +1,4 @@
-import { Fragment, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import {
   flexRender,
@@ -7,10 +7,12 @@ import {
   useReactTable,
   type ColumnDef,
   type SortingState,
+  type Table,
 } from '@tanstack/react-table';
 import { Icon } from './Icon';
 import { Empty } from './primitives';
 import { Pager, usePaging } from './Pager';
+import { sortCompare } from '@/lib/sortCompare';
 
 /** TanStack types the value generic as `any`; alias it once so pages don't each restate it. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -125,17 +127,31 @@ export function DataTable<T>({
     });
   }, [columns, nameColumn, detailHref]);
 
+  // 排序规则统一用 sortCompare；降序时 TanStack 会把比较结果取反，所以要告诉它当前方向，空值才能始终排最后
+  const tableRef = useRef<Table<T> | null>(null);
   const table = useReactTable({
     data,
     columns: resolvedColumns,
     state: { sorting },
     onSortingChange: setSorting,
+    defaultColumn: {
+      sortDescFirst: false, // 第一次点击一律升序（TanStack 默认数字列先降序）
+      sortingFn: (a, b, id) => sortCompare(a.getValue(id), b.getValue(id), tableRef.current?.getColumn(id)?.getIsSorted() === 'desc'),
+    },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
 
+  tableRef.current = table;
   const allRows = table.getRowModel().rows;
   const paging = usePaging(pageId ?? 'unpaged', allRows.length);
+  // 排序一变就回到第 1 页，不然停在第 3 页看到的是另一批行
+  const firstSort = useRef(true);
+  useEffect(() => {
+    if (firstSort.current) { firstSort.current = false; return; }
+    paging.go(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sorting]);
   const rows = pageId ? allRows.slice(paging.from - 1, paging.to) : allRows;
 
   const picked = rows.filter((r) => sel.has(getRowKey(r.original))).length;
@@ -179,8 +195,10 @@ export function DataTable<T>({
                   const cls = join(m.th, num && 'num', sortable && 'sort', pinOf(i));
                   return (
                     <th key={h.id} className={cls} style={m.width ? { width: m.width } : undefined}
-                      aria-sort={dir ? (dir === 'asc' ? 'ascending' : 'descending') : undefined}
-                      onClick={sortable ? h.column.getToggleSortingHandler() : undefined}>
+                      aria-sort={sortable ? (dir === 'asc' ? 'ascending' : dir === 'desc' ? 'descending' : 'none') : undefined}
+                      tabIndex={sortable ? 0 : undefined}
+                      onClick={sortable ? h.column.getToggleSortingHandler() : undefined}
+                      onKeyDown={sortable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); h.column.getToggleSortingHandler()?.(e); } } : undefined}>
                       {flexRender(h.column.columnDef.header, h.getContext())}
                       {dir && <Icon name="sortdown" style={dir === 'asc' ? { transform: 'rotate(180deg)' } : undefined} />}
                     </th>
