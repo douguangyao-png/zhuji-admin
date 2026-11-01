@@ -103,3 +103,7 @@ Versions are the ones resolved in `package-lock.json`; only what the code actual
 ### What is not included
 
 There is no backend. By default the pages run on an in-browser mock layer (`src/api/mock/`) that keeps data in the browser; connect your own backend according to [docs/接口约定.md](./docs/接口约定.md).
+
+## License
+
+Licensed under the [Apache License 2.0](./LICENSE).

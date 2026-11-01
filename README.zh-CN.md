@@ -103,3 +103,7 @@ npm run new:module contract 合同管理        # 模块键、显示名、可选
 ### 不包含什么
 
 没有后端。默认跑在浏览器内的模拟层（`src/api/mock/`）上，数据存在浏览器里；后端按 [docs/接口约定.md](./docs/接口约定.md) 对接。
+
+## 许可证
+
+基于 [Apache License 2.0](./LICENSE) 开源。
