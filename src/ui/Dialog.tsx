@@ -1,5 +1,5 @@
 import * as RD from '@radix-ui/react-dialog';
-import type { ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
 import { Icon } from './Icon';
 
 /** The v2 `.dialog` shell for hand-written dialogs: header, body, footer, Esc and the scrim close it. */
@@ -14,6 +14,7 @@ export function Dialog({ title, sub, size, onClose, footer, children, className 
   className?: string;
   style?: React.CSSProperties;
 }) {
+  const opener = useRef<HTMLElement | null>(null);
   // 焦点陷阱、Esc（只关最上层）、关闭后焦点还原、aria 标记由 Radix 提供；外观沿用 .scrim / .dialog
   return (
     <RD.Root open onOpenChange={(o) => { if (!o) onClose(); }}>
@@ -27,9 +28,11 @@ export function Dialog({ title, sub, size, onClose, footer, children, className 
           onOpenAutoFocus={(e) => {
             // 保持原行为：页面里写了 autoFocus 的元素优先，否则焦点落在弹窗容器，而不是右上角的关闭钮
             e.preventDefault();
+            opener.current = document.activeElement as HTMLElement | null;
             const el = e.currentTarget as HTMLElement;
             if (!el.contains(document.activeElement)) el.focus();
           }}
+          onCloseAutoFocus={(e) => { e.preventDefault(); if (opener.current?.isConnected) opener.current.focus(); }}
         >
           <div className="dlg-h">
             <div>

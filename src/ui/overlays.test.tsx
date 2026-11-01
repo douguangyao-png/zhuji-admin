@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { Dialog } from './Dialog';
@@ -79,7 +79,7 @@ describe('Dialog', () => {
     expect(closed).not.toHaveBeenCalled();
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     await user.click(btn);
-    await user.click(await screen.findByRole('option', { name: '乙' }));
+    await user.click(within(await screen.findByRole('listbox')).getByRole('option', { name: '乙' }));
     expect(btn).toHaveTextContent('乙');
     expect(closed).not.toHaveBeenCalled();
   });

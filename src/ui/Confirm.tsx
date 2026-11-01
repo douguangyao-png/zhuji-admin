@@ -1,4 +1,5 @@
 import * as RD from '@radix-ui/react-dialog';
+import { useRef } from 'react';
 import { create } from 'zustand';
 import { Icon } from '@/ui/Icon';
 
@@ -25,6 +26,7 @@ export const confirm = (opts: ConfirmOpts): Promise<boolean> => {
 export function ConfirmHost() {
   const current = useConfirmStore((s) => s.current);
 
+  const opener = useRef<HTMLElement | null>(null);
   if (!current) return null;
   const { title, text, okLabel, danger } = current.opts;
   // Esc 由 Radix 处理且只关最上层：确认框叠在对话框上时，Esc 只取消确认框
@@ -35,8 +37,9 @@ export function ConfirmHost() {
         <RD.Content className="dialog sm" role="alertdialog" tabIndex={-1} onOpenAutoFocus={(e) => {
           // 焦点落在「确定」（原 autoFocus 行为）
           e.preventDefault();
+          opener.current = document.activeElement as HTMLElement | null;
           (e.currentTarget as HTMLElement).querySelector<HTMLElement>('[data-ok]')?.focus();
-        }}>
+        }} onCloseAutoFocus={(e) => { e.preventDefault(); if (opener.current?.isConnected) opener.current.focus(); }}>
           <div className="dlg-h">
             <div><RD.Title asChild><h3>{title}</h3></RD.Title><RD.Description asChild><p>{text}</p></RD.Description></div>
           </div>
