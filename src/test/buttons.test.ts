@@ -46,7 +46,7 @@ test('按钮都是「图标 + 文字」；弹窗右上角的叉号只有图标�
   expect(all.length).toBeGreaterThan(150);
   const pager = (b: Found) => b.where.startsWith('ui/Pager.tsx:');
   expect(all.filter((b) => !/dlg-x/.test(b.cls) && !pager(b) && (!b.icon || !b.text)).map((b) => b.where)).toEqual([]);
-  expect(all.filter((b) => /dlg-x/.test(b.cls)).map((b) => [b.where, b.icon, b.text])).toEqual([['ui/Dialog.tsx:32', true, false]]);
+  expect(all.filter((b) => /dlg-x/.test(b.cls)).map((b) => [b.where, b.icon, b.text])).toEqual([['ui/Dialog.tsx:42', true, false]]);
 });
 
 test('删除按钮统一用 btn-ds，不再有灰色、描边或纯图标的删除', () => {
