@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { freshDb, openApp } from './render';
 
@@ -15,8 +15,8 @@ async function checkSortable(path: string, header: string, tableName?: string) {
   const table = th.closest('table') as HTMLElement;
   expect(tableName ? screen.getByRole('table', { name: tableName }) : table).toBe(table);
   expect(th).toHaveAttribute('aria-sort', 'none');
+  await waitFor(() => expect(firstCol(table).length).toBeGreaterThan(1)); // 数据是异步取的
   const before = firstCol(table);
-  expect(before.length).toBeGreaterThan(1);
   await user.click(th);
   expect(th).toHaveAttribute('aria-sort', 'ascending');
   const asc = firstCol(table);
@@ -30,6 +30,6 @@ async function checkSortable(path: string, header: string, tableName?: string) {
   expect(firstCol(table)).toEqual(before);
 }
 
-test('审批流：点「单据」表头排序，Enter 切降序，空格取消', () => checkSortable('/system/workflow', '单据'));
+test('消息推送：点「事件」表头排序，Enter 切降序，空格取消', () => checkSortable('/system/notify', '事件'));
 test('人员属性：点「名称」表头排序（内置与扩展属性混在一起排）', () => checkSortable('/system/user-attrs', '名称'));
 test('接口配置：点「方式」表头排序', () => checkSortable('/system/devices', '方式'));
